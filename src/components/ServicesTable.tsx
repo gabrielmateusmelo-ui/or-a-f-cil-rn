@@ -28,7 +28,6 @@ export default function ServicesTable({ items, hideZero, search, mode }: Props) 
       const q = search.toLowerCase();
       list = list.filter((i) => i.descricao.toLowerCase().includes(q) || i.codigo.toLowerCase().includes(q) || i.grupo.toLowerCase().includes(q));
     }
-    // Sort by ABC (total desc)
     return [...list].sort((a, b) =>
       mode === 'com' ? b.totalComMaterial - a.totalComMaterial : b.totalSemMaterial - a.totalSemMaterial
     );
@@ -46,6 +45,7 @@ export default function ServicesTable({ items, hideZero, search, mode }: Props) 
             <th className="py-2 px-2 text-xs font-semibold text-muted-foreground">Descrição</th>
             <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">Qtd</th>
             <th className="py-2 px-2 text-xs font-semibold text-muted-foreground">Un</th>
+            <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">R$/un</th>
             {mode === 'com' && <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">Material</th>}
             <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">M.O.</th>
             <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">Total</th>
@@ -59,6 +59,7 @@ export default function ServicesTable({ items, hideZero, search, mode }: Props) 
             const pct = mode === 'com' ? item.abcPct : item.abcPctSemMat;
             const cumPct = mode === 'com' ? item.abcCumPct : item.abcCumPctSemMat;
             const itemTotal = mode === 'com' ? item.totalComMaterial : item.totalSemMaterial;
+            const rpu = item.qtd > 0 ? itemTotal / item.qtd : 0;
             return (
               <tr key={item.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
                 <td className="py-1.5 px-2">
@@ -76,6 +77,7 @@ export default function ServicesTable({ items, hideZero, search, mode }: Props) 
                 </td>
                 <td className="py-1.5 px-2 text-right font-mono">{fmt(item.qtd)}</td>
                 <td className="py-1.5 px-2 text-muted-foreground">{item.unidade}</td>
+                <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">{item.qtd > 0 ? fmt(rpu) : '—'}</td>
                 {mode === 'com' && <td className="py-1.5 px-2 text-right font-mono">{fmt(item.custoMaterial)}</td>}
                 <td className="py-1.5 px-2 text-right font-mono">{fmt(item.custoMO)}</td>
                 <td className="py-1.5 px-2 text-right font-mono font-semibold">{fmt(itemTotal)}</td>
@@ -87,7 +89,7 @@ export default function ServicesTable({ items, hideZero, search, mode }: Props) 
         </tbody>
         <tfoot>
           <tr className="border-t-2 border-border font-semibold">
-            <td colSpan={mode === 'com' ? 7 : 6} className="py-2 px-2 text-right">Subtotal</td>
+            <td colSpan={mode === 'com' ? 8 : 7} className="py-2 px-2 text-right">Subtotal</td>
             <td className="py-2 px-2 text-right font-mono">{fmt(total)}</td>
             <td colSpan={2}></td>
           </tr>

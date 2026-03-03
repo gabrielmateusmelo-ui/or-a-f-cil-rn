@@ -150,6 +150,16 @@
     "inclui_mo": true
   },
   {
+    "id": "forro_pvc",
+    "grupo": "Cobertura",
+    "codigo": "CB-03",
+    "descricao": "Forro de PVC",
+    "unidade": "m²",
+    "qtd_expr": "areaTeto",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
     "id": "chapisco_externo",
     "grupo": "Revestimento",
     "codigo": "RV-01",
@@ -305,7 +315,7 @@
     "codigo": "PT-01",
     "descricao": "Pintura interna (PVA 2 demãos)",
     "unidade": "m²",
-    "qtd_expr": "(areaParedeExternaLiquida + areaParedeInterna2Faces - areaRevestimentoCeramicoParede) + areaTeto",
+    "qtd_expr": "(areaParedeExternaLiquida + areaParedeInterna2Faces - areaRevestimentoCeramicoParede) + areaTeto + areaExtraParedesPDduplo",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -315,7 +325,17 @@
     "codigo": "PT-02",
     "descricao": "Pintura externa (acrílica 2 demãos)",
     "unidade": "m²",
-    "qtd_expr": "areaParedeExternaLiquida",
+    "qtd_expr": "areaParedeExternaLiquida * isPinturaAcrilica",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "textura_externa",
+    "grupo": "Pintura",
+    "codigo": "PT-03",
+    "descricao": "Textura externa",
+    "unidade": "m²",
+    "qtd_expr": "areaParedeExternaLiquida * isPinturaTextura",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -380,12 +400,92 @@
     "inclui_mo": true
   },
   {
-    "id": "forro_pvc",
-    "grupo": "Cobertura",
-    "codigo": "CB-03",
-    "descricao": "Forro de PVC",
+    "id": "muro_alvenaria",
+    "grupo": "Muro",
+    "codigo": "MR-01",
+    "descricao": "Alvenaria de muro (bloco 14cm)",
     "unidade": "m²",
-    "qtd_expr": "areaTeto",
+    "qtd_expr": "areaMuro",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "muro_reboco",
+    "grupo": "Muro",
+    "codigo": "MR-02",
+    "descricao": "Reboco de muro",
+    "unidade": "m²",
+    "qtd_expr": "areaMuro * fatorFaceReboco",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "muro_pintura",
+    "grupo": "Muro",
+    "codigo": "MR-03",
+    "descricao": "Pintura de muro",
+    "unidade": "m²",
+    "qtd_expr": "areaMuro * fatorFacePintura",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "portao_garagem",
+    "grupo": "Muro",
+    "codigo": "MR-04",
+    "descricao": "Portão de garagem",
+    "unidade": "un",
+    "qtd_expr": "portaoGaragem",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "portao_pedestre",
+    "grupo": "Muro",
+    "codigo": "MR-05",
+    "descricao": "Portão pedestre",
+    "unidade": "un",
+    "qtd_expr": "portaoPedestre",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "piscina_escavacao",
+    "grupo": "Piscina",
+    "codigo": "PS-01",
+    "descricao": "Escavação para piscina",
+    "unidade": "m³",
+    "qtd_expr": "volumePiscina * 1.05 * temPiscina",
+    "inclui_material": false,
+    "inclui_mo": true
+  },
+  {
+    "id": "piscina_concreto",
+    "grupo": "Piscina",
+    "codigo": "PS-02",
+    "descricao": "Concreto armado da piscina",
+    "unidade": "m³",
+    "qtd_expr": "volumePiscina * 0.25 * temPiscina",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "piscina_revest",
+    "grupo": "Piscina",
+    "codigo": "PS-03",
+    "descricao": "Revestimento da piscina",
+    "unidade": "m²",
+    "qtd_expr": "areaRevestPiscina * temPiscina",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "piscina_filtragem",
+    "grupo": "Piscina",
+    "codigo": "PS-04",
+    "descricao": "Sistema de filtragem e casa de máquinas",
+    "unidade": "un",
+    "qtd_expr": "casaMaquinas * temPiscina",
     "inclui_material": true,
     "inclui_mo": true
   }

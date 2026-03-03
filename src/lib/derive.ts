@@ -1,3 +1,23 @@
+export interface MuroInputs {
+  frente: number;
+  fundos: number;
+  ladoDir: number;
+  ladoEsq: number;
+  altura: number;
+  rebocar: 'NAO' | 'SIM' | 'FORA';
+  pintar: 'NAO' | 'SIM' | 'FORA';
+  portaoGaragem: boolean;
+  portaoPedestre: boolean;
+}
+
+export interface PiscinaInputs {
+  largura: number;
+  comprimento: number;
+  profundidade: number;
+  revest: 'CERAMICA' | 'VINIL';
+  casaMaquinas: boolean;
+}
+
 export interface ProjectInputs {
   areaConstruida_m2: number;
   largura_m: number;
@@ -21,13 +41,23 @@ export interface ProjectInputs {
   };
   bdiModo: 'automatico' | 'manual';
   bdiManual_pct: number;
-  // New inputs
   fatorParedesInternas: number;
   percVaosExternos_pct: number;
   percPortasInternas_pct: number;
   alturaRevestParede_m: number;
   areaRevestParedeOverride_m2: number;
   areaTetoExcluiVaranda: boolean;
+  // Dimensions mode
+  dimensoesModo: 'AREA' | 'LxC';
+  proporcaoLC: number;
+  // Muro
+  muro: MuroInputs;
+  // Piscina
+  piscina: PiscinaInputs;
+  // Advanced
+  pedireitoDuplo_area_m2: number;
+  pedireitoDuplo_altura_m: number;
+  tipoPinturaExterna: 'ACRILICA' | 'TEXTURA';
 }
 
 export interface DerivedVars {
@@ -55,7 +85,25 @@ export interface DerivedVars {
   isFibro: number;
   isCeram: number;
   isLaje: number;
-  // Legacy aliases for backward compat with expressions
+  // Muro
+  perimetroMuro: number;
+  areaMuro: number;
+  fatorFaceReboco: number;
+  fatorFacePintura: number;
+  portaoGaragem: number;
+  portaoPedestre: number;
+  // Piscina
+  areaPiscina: number;
+  perimetroPiscina: number;
+  volumePiscina: number;
+  areaRevestPiscina: number;
+  temPiscina: number;
+  casaMaquinas: number;
+  // Advanced
+  areaExtraParedesPDduplo: number;
+  isPinturaAcrilica: number;
+  isPinturaTextura: number;
+  // Legacy aliases
   perimetro: number;
   areaParede: number;
   areaParedeInterna: number;
@@ -64,13 +112,23 @@ export interface DerivedVars {
 }
 
 export function derive(inputs: ProjectInputs): DerivedVars {
-  const comprimento = inputs.comprimento_m > 0
-    ? inputs.comprimento_m
-    : inputs.largura_m > 0
-      ? inputs.areaConstruida_m2 / inputs.largura_m
-      : Math.sqrt(inputs.areaConstruida_m2);
+  // Dimensions mode
+  let areaConstruida: number;
+  let largura: number;
+  let comprimento: number;
 
-  const largura = inputs.largura_m > 0 ? inputs.largura_m : comprimento;
+  if (inputs.dimensoesModo === 'LxC') {
+    largura = inputs.largura_m;
+    comprimento = inputs.comprimento_m;
+    areaConstruida = largura * comprimento;
+  } else {
+    // AREA mode
+    areaConstruida = inputs.areaConstruida_m2;
+    const ratio = inputs.proporcaoLC > 0 ? inputs.proporcaoLC : 1;
+    largura = Math.sqrt(areaConstruida * ratio);
+    comprimento = largura > 0 ? areaConstruida / largura : 0;
+  }
+
   const perimetroExterno = 2 * (largura + comprimento);
   const perimetroInterno = perimetroExterno * inputs.fatorParedesInternas;
   const perimetroTotal = perimetroExterno + perimetroInterno;
@@ -80,12 +138,14 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const areaParedeInterna1Face = perimetroInterno * inputs.peDireito_m;
   const areaParedeInterna2Faces = areaParedeInterna1Face * 2 * (1 - inputs.percPortasInternas_pct / 100);
 
-  const areaConstruida = inputs.areaConstruida_m2;
   const areaVaranda = inputs.areaVaranda_m2;
   const areaMolhadas = inputs.areaMolhadas_m2;
   const areaInterna = Math.max(0, areaConstruida - areaVaranda);
   const areaSeca = Math.max(0, areaInterna - areaMolhadas);
   const areaTeto = Math.max(0, areaConstruida - (inputs.areaTetoExcluiVaranda ? areaVaranda : 0));
+
+  // Pé-direito duplo extra wall area
+  const areaExtraParedesPDduplo = inputs.pedireitoDuplo_area_m2 * Math.max(0, inputs.pedireitoDuplo_altura_m - inputs.peDireito_m);
 
   // Ceramic wall coverage
   let areaRevestimentoCeramicoParede: number;
@@ -96,7 +156,7 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     areaRevestimentoCeramicoParede = areaRevest * (inputs.alturaRevestParede_m / 1.5);
   }
 
-  // Roof area with 15% overhang for pitched roofs
+  // Roof
   const fatorTelhado = inputs.tipoCobertura === 'laje impermeabilizada' ? 1.0 : 1.15;
   const areaTelhado = areaConstruida * fatorTelhado;
 
@@ -104,6 +164,28 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const isFibro = inputs.tipoCobertura === 'fibrocimento' ? 1 : 0;
   const isCeram = inputs.tipoCobertura === 'cerâmica' ? 1 : 0;
   const isLaje = inputs.tipoCobertura === 'laje impermeabilizada' ? 1 : 0;
+
+  // Muro
+  const m = inputs.muro;
+  const perimetroMuro = m.frente + m.fundos + m.ladoDir + m.ladoEsq;
+  const areaMuro = perimetroMuro * m.altura;
+  const fatorFaceReboco = m.rebocar === 'SIM' ? 1 : m.rebocar === 'FORA' ? 0.5 : 0;
+  const fatorFacePintura = m.pintar === 'SIM' ? 1 : m.pintar === 'FORA' ? 0.5 : 0;
+  const portaoGaragem = m.portaoGaragem ? 1 : 0;
+  const portaoPedestre = m.portaoPedestre ? 1 : 0;
+
+  // Piscina
+  const p = inputs.piscina;
+  const areaPiscina = p.largura * p.comprimento;
+  const perimetroPiscina = 2 * (p.largura + p.comprimento);
+  const volumePiscina = areaPiscina * p.profundidade;
+  const areaRevestPiscina = areaPiscina + (perimetroPiscina * p.profundidade * 2);
+  const temPiscina = (areaPiscina > 0 && p.profundidade > 0) ? 1 : 0;
+  const casaMaquinas = p.casaMaquinas ? 1 : 0;
+
+  // Pintura externa flags
+  const isPinturaAcrilica = inputs.tipoPinturaExterna === 'ACRILICA' ? 1 : 0;
+  const isPinturaTextura = inputs.tipoPinturaExterna === 'TEXTURA' ? 1 : 0;
 
   return {
     comprimento,
@@ -130,6 +212,24 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     isFibro,
     isCeram,
     isLaje,
+    // Muro
+    perimetroMuro,
+    areaMuro,
+    fatorFaceReboco,
+    fatorFacePintura,
+    portaoGaragem,
+    portaoPedestre,
+    // Piscina
+    areaPiscina,
+    perimetroPiscina,
+    volumePiscina,
+    areaRevestPiscina,
+    temPiscina,
+    casaMaquinas,
+    // Advanced
+    areaExtraParedesPDduplo,
+    isPinturaAcrilica,
+    isPinturaTextura,
     // Legacy aliases
     perimetro: perimetroExterno,
     areaParede: areaParedeExternaLiquida,

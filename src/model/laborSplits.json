@@ -1,0 +1,17 @@
+{
+  "Serviços Preliminares": { "servente": 0.7, "pedreiro": 0.3 },
+  "Fundação": { "pedreiro": 0.3, "servente": 0.3, "armador": 0.2, "carpinteiro": 0.2 },
+  "Alvenaria": { "pedreiro": 0.6, "servente": 0.4 },
+  "Estrutura": { "pedreiro": 0.3, "servente": 0.2, "armador": 0.3, "carpinteiro": 0.2 },
+  "Cobertura": { "carpinteiro": 0.5, "servente": 0.3, "pedreiro": 0.2 },
+  "Revestimento": { "pedreiro": 0.5, "servente": 0.3, "azulejista": 0.2 },
+  "Pisos": { "azulejista": 0.5, "servente": 0.3, "pedreiro": 0.2 },
+  "Instalações Hidráulicas": { "encanador": 0.7, "servente": 0.3 },
+  "Instalações Elétricas": { "eletricista": 0.7, "servente": 0.3 },
+  "Pintura": { "pintor": 0.7, "servente": 0.3 },
+  "Esquadrias": { "carpinteiro": 0.5, "pedreiro": 0.3, "servente": 0.2 },
+  "Louças e Metais": { "encanador": 0.5, "pedreiro": 0.3, "servente": 0.2 },
+  "Muro": { "pedreiro": 0.5, "servente": 0.4, "pintor": 0.1 },
+  "Piscina": { "pedreiro": 0.4, "servente": 0.3, "azulejista": 0.2, "encanador": 0.1 },
+  "_default": { "pedreiro": 0.5, "servente": 0.5 }
+}
