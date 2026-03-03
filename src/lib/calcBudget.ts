@@ -39,6 +39,27 @@ export interface BudgetResult {
 
 const prices = pricesData as Record<string, { material_unit: number; mo_unit: number }>;
 
+// Multipliers by padrao and grupo applied to material_unit
+const padraoMultipliers: Record<string, Record<string, number>> = {
+  'Baixo': {
+    'Revestimento': 0.75, 'Pisos': 0.70, 'Pintura': 0.80,
+    'Esquadrias': 0.65, 'Louças e Metais': 0.60,
+    'Instalações Hidráulicas': 0.85, 'Instalações Elétricas': 0.85,
+    'Cobertura': 0.85,
+  },
+  'Médio': {},
+  'Alto': {
+    'Revestimento': 1.30, 'Pisos': 1.35, 'Pintura': 1.20,
+    'Esquadrias': 1.50, 'Louças e Metais': 1.80,
+    'Instalações Hidráulicas': 1.20, 'Instalações Elétricas': 1.20,
+    'Cobertura': 1.15,
+  },
+};
+
+function getPadraoMultiplier(padrao: string, grupo: string): number {
+  return padraoMultipliers[padrao]?.[grupo] ?? 1.0;
+}
+
 function calcBdiPct(inputs: ProjectInputs): number {
   if (inputs.bdiModo === 'manual') {
     return inputs.bdiManual_pct / 100;
@@ -78,7 +99,8 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
     }
 
     const price = prices[item.id] || { material_unit: 0, mo_unit: 0 };
-    const matUnit = item.inclui_material ? price.material_unit : 0;
+    const mult = getPadraoMultiplier(inputs.padrao, item.grupo);
+    const matUnit = item.inclui_material ? price.material_unit * mult : 0;
     const moUnit = item.inclui_mo ? price.mo_unit : 0;
 
     return {

@@ -1,6 +1,6 @@
-import { ProjectInputs, MuroInputs, PiscinaInputs } from '@/lib/derive';
-import { derive } from '@/lib/derive';
+import { ProjectInputs, MuroInputs, MuroAcabamentos, MuroAcabamentoTrechos, MuroFaceConfig, PiscinaInputs, defaultMuroAcabamentos } from '@/lib/derive';
 import { useMemo } from 'react';
+import { derive } from '@/lib/derive';
 
 interface Props {
   inputs: ProjectInputs;
@@ -52,6 +52,77 @@ const CheckboxField = ({ label, checked, onChange }: {
   </label>
 );
 
+// Muro acabamento matrix component
+function MuroAcabamentoGrid({ acabamentos, onChange }: {
+  acabamentos: MuroAcabamentos;
+  onChange: (a: MuroAcabamentos) => void;
+}) {
+  const trechos = ['frente', 'laterais', 'fundo'] as const;
+  const tipos = ['chapisco', 'reboco', 'pintura'] as const;
+
+  const toggle = (tipo: typeof tipos[number], trecho: typeof trechos[number], face: 'interna' | 'externa') => {
+    const updated = JSON.parse(JSON.stringify(acabamentos)) as MuroAcabamentos;
+    updated[tipo][trecho][face] = !updated[tipo][trecho][face];
+    onChange(updated);
+  };
+
+  return (
+    <div className="col-span-2 mt-1">
+      <p className="text-xs font-medium text-muted-foreground mb-1">Acabamentos por trecho/face</p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[10px]">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="text-left py-1 pr-1 text-muted-foreground font-medium"></th>
+              {trechos.map(t => (
+                <th key={t} colSpan={2} className="text-center py-1 px-0.5 text-muted-foreground font-medium capitalize">{t}</th>
+              ))}
+            </tr>
+            <tr className="border-b border-border">
+              <th className="text-left py-0.5 pr-1 text-muted-foreground"></th>
+              {trechos.map(t => (
+                <React.Fragment key={t}>
+                  <th className="text-center py-0.5 px-0.5 text-muted-foreground font-normal">Int</th>
+                  <th className="text-center py-0.5 px-0.5 text-muted-foreground font-normal">Ext</th>
+                </React.Fragment>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {tipos.map(tipo => (
+              <tr key={tipo} className="border-b border-border/50">
+                <td className="py-1 pr-1 text-muted-foreground capitalize font-medium">{tipo}</td>
+                {trechos.map(trecho => (
+                  <React.Fragment key={trecho}>
+                    <td className="text-center py-1 px-0.5">
+                      <input
+                        type="checkbox"
+                        checked={acabamentos[tipo][trecho].interna}
+                        onChange={() => toggle(tipo, trecho, 'interna')}
+                        className="rounded border-input h-3 w-3"
+                      />
+                    </td>
+                    <td className="text-center py-1 px-0.5">
+                      <input
+                        type="checkbox"
+                        checked={acabamentos[tipo][trecho].externa}
+                        onChange={() => toggle(tipo, trecho, 'externa')}
+                        className="rounded border-input h-3 w-3"
+                      />
+                    </td>
+                  </React.Fragment>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+import React from 'react';
+
 export default function ParamsForm({ inputs, onChange }: Props) {
   const set = <K extends keyof ProjectInputs>(key: K, val: ProjectInputs[K]) =>
     onChange({ ...inputs, [key]: val });
@@ -65,7 +136,9 @@ export default function ParamsForm({ inputs, onChange }: Props) {
   const setPiscina = <K extends keyof PiscinaInputs>(key: K, val: PiscinaInputs[K]) =>
     onChange({ ...inputs, piscina: { ...inputs.piscina, [key]: val } });
 
-  // Compute derived for read-only display
+  // Safe acabamentos with fallback
+  const acabamentos: MuroAcabamentos = inputs.muro?.acabamentos ?? defaultMuroAcabamentos();
+
   const derived = useMemo(() => derive(inputs), [inputs]);
 
   const isAreaMode = inputs.dimensoesModo === 'AREA';
@@ -169,19 +242,9 @@ export default function ParamsForm({ inputs, onChange }: Props) {
         <InputField label="Lado Dir." value={inputs.muro.ladoDir} onChange={(v) => setMuro('ladoDir', v)} suffix="m" />
         <InputField label="Lado Esq." value={inputs.muro.ladoEsq} onChange={(v) => setMuro('ladoEsq', v)} suffix="m" />
         <InputField label="Altura" value={inputs.muro.altura} onChange={(v) => setMuro('altura', v)} suffix="m" step={0.1} />
-        <SelectField label="Rebocar" value={inputs.muro.rebocar} onChange={(v) => setMuro('rebocar', v as any)}
-          options={[
-            { value: 'NAO', label: 'Não' },
-            { value: 'SIM', label: 'Sim (2 faces)' },
-            { value: 'FORA', label: 'Só fora (1 face)' },
-          ]}
-        />
-        <SelectField label="Pintar" value={inputs.muro.pintar} onChange={(v) => setMuro('pintar', v as any)}
-          options={[
-            { value: 'NAO', label: 'Não' },
-            { value: 'SIM', label: 'Sim (2 faces)' },
-            { value: 'FORA', label: 'Só fora (1 face)' },
-          ]}
+        <MuroAcabamentoGrid
+          acabamentos={acabamentos}
+          onChange={(a) => setMuro('acabamentos', a)}
         />
         <CheckboxField label="Portão garagem" checked={inputs.muro.portaoGaragem} onChange={(v) => setMuro('portaoGaragem', v)} />
         <CheckboxField label="Portão pedestre" checked={inputs.muro.portaoPedestre} onChange={(v) => setMuro('portaoPedestre', v)} />

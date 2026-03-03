@@ -1,11 +1,40 @@
+export interface MuroFaceConfig {
+  interna: boolean;
+  externa: boolean;
+}
+
+export interface MuroAcabamentoTrechos {
+  frente: MuroFaceConfig;
+  laterais: MuroFaceConfig;
+  fundo: MuroFaceConfig;
+}
+
+export interface MuroAcabamentos {
+  chapisco: MuroAcabamentoTrechos;
+  reboco: MuroAcabamentoTrechos;
+  pintura: MuroAcabamentoTrechos;
+}
+
+const defaultMuroFace = (): MuroFaceConfig => ({ interna: false, externa: false });
+const defaultMuroTrechos = (): MuroAcabamentoTrechos => ({
+  frente: defaultMuroFace(),
+  laterais: defaultMuroFace(),
+  fundo: defaultMuroFace(),
+});
+
+export const defaultMuroAcabamentos = (): MuroAcabamentos => ({
+  chapisco: defaultMuroTrechos(),
+  reboco: defaultMuroTrechos(),
+  pintura: defaultMuroTrechos(),
+});
+
 export interface MuroInputs {
   frente: number;
   fundos: number;
   ladoDir: number;
   ladoEsq: number;
   altura: number;
-  rebocar: 'NAO' | 'SIM' | 'FORA';
-  pintar: 'NAO' | 'SIM' | 'FORA';
+  acabamentos: MuroAcabamentos;
   portaoGaragem: boolean;
   portaoPedestre: boolean;
 }
@@ -47,14 +76,10 @@ export interface ProjectInputs {
   alturaRevestParede_m: number;
   areaRevestParedeOverride_m2: number;
   areaTetoExcluiVaranda: boolean;
-  // Dimensions mode
   dimensoesModo: 'AREA' | 'LxC';
   proporcaoLC: number;
-  // Muro
   muro: MuroInputs;
-  // Piscina
   piscina: PiscinaInputs;
-  // Advanced
   pedireitoDuplo_area_m2: number;
   pedireitoDuplo_altura_m: number;
   tipoPinturaExterna: 'ACRILICA' | 'TEXTURA';
@@ -88,8 +113,12 @@ export interface DerivedVars {
   // Muro
   perimetroMuro: number;
   areaMuro: number;
-  fatorFaceReboco: number;
-  fatorFacePintura: number;
+  areaMuroFrente1Face: number;
+  areaMuroLaterais1Face: number;
+  areaMuroFundo1Face: number;
+  areaMuroChapisco_m2: number;
+  areaMuroReboco_m2: number;
+  areaMuroPintura_m2: number;
   portaoGaragem: number;
   portaoPedestre: number;
   // Piscina
@@ -108,7 +137,40 @@ export interface DerivedVars {
   areaParede: number;
   areaParedeInterna: number;
   areaRevestimentoCeramico: number;
+  // Legacy muro aliases (keep for backward compat)
+  fatorFaceReboco: number;
+  fatorFacePintura: number;
   [key: string]: number;
+}
+
+function safeMuroAcabamentos(m: any): MuroAcabamentos {
+  const defaults = defaultMuroAcabamentos();
+  if (!m || typeof m !== 'object') return defaults;
+  const result: any = {};
+  for (const tipo of ['chapisco', 'reboco', 'pintura'] as const) {
+    result[tipo] = {};
+    for (const trecho of ['frente', 'laterais', 'fundo'] as const) {
+      result[tipo][trecho] = {
+        interna: m[tipo]?.[trecho]?.interna ?? defaults[tipo][trecho].interna,
+        externa: m[tipo]?.[trecho]?.externa ?? defaults[tipo][trecho].externa,
+      };
+    }
+  }
+  return result as MuroAcabamentos;
+}
+
+function calcMuroAcabArea(
+  acabTrechos: MuroAcabamentoTrechos,
+  areaFrente: number,
+  areaLaterais: number,
+  areaFundo: number,
+): number {
+  const faceCount = (fc: MuroFaceConfig) => (fc.interna ? 1 : 0) + (fc.externa ? 1 : 0);
+  return (
+    areaFrente * faceCount(acabTrechos.frente) +
+    areaLaterais * faceCount(acabTrechos.laterais) +
+    areaFundo * faceCount(acabTrechos.fundo)
+  );
 }
 
 export function derive(inputs: ProjectInputs): DerivedVars {
@@ -122,7 +184,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     comprimento = inputs.comprimento_m;
     areaConstruida = largura * comprimento;
   } else {
-    // AREA mode
     areaConstruida = inputs.areaConstruida_m2;
     const ratio = inputs.proporcaoLC > 0 ? inputs.proporcaoLC : 1;
     largura = Math.sqrt(areaConstruida * ratio);
@@ -144,7 +205,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const areaSeca = Math.max(0, areaInterna - areaMolhadas);
   const areaTeto = Math.max(0, areaConstruida - (inputs.areaTetoExcluiVaranda ? areaVaranda : 0));
 
-  // Pé-direito duplo extra wall area
   const areaExtraParedesPDduplo = inputs.pedireitoDuplo_area_m2 * Math.max(0, inputs.pedireitoDuplo_altura_m - inputs.peDireito_m);
 
   // Ceramic wall coverage
@@ -160,30 +220,42 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const fatorTelhado = inputs.tipoCobertura === 'laje impermeabilizada' ? 1.0 : 1.15;
   const areaTelhado = areaConstruida * fatorTelhado;
 
-  // Coverage type flags
   const isFibro = inputs.tipoCobertura === 'fibrocimento' ? 1 : 0;
   const isCeram = inputs.tipoCobertura === 'cerâmica' ? 1 : 0;
   const isLaje = inputs.tipoCobertura === 'laje impermeabilizada' ? 1 : 0;
 
-  // Muro
-  const m = inputs.muro;
-  const perimetroMuro = m.frente + m.fundos + m.ladoDir + m.ladoEsq;
-  const areaMuro = perimetroMuro * m.altura;
-  const fatorFaceReboco = m.rebocar === 'SIM' ? 1 : m.rebocar === 'FORA' ? 0.5 : 0;
-  const fatorFacePintura = m.pintar === 'SIM' ? 1 : m.pintar === 'FORA' ? 0.5 : 0;
+  // Muro - with safe deep merge
+  const m = inputs.muro || {} as any;
+  const frente = m.frente || 0;
+  const fundos = m.fundos || 0;
+  const ladoDir = m.ladoDir || 0;
+  const ladoEsq = m.ladoEsq || 0;
+  const altMuro = m.altura || 0;
+
+  const areaMuroFrente1Face = frente * altMuro;
+  const areaMuroLaterais1Face = (ladoDir + ladoEsq) * altMuro;
+  const areaMuroFundo1Face = fundos * altMuro;
+  const perimetroMuro = frente + fundos + ladoDir + ladoEsq;
+  const areaMuro = perimetroMuro * altMuro;
+
+  const acabamentos = safeMuroAcabamentos(m.acabamentos);
+
+  const areaMuroChapisco_m2 = calcMuroAcabArea(acabamentos.chapisco, areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face);
+  const areaMuroReboco_m2 = calcMuroAcabArea(acabamentos.reboco, areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face);
+  const areaMuroPintura_m2 = calcMuroAcabArea(acabamentos.pintura, areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face);
+
   const portaoGaragem = m.portaoGaragem ? 1 : 0;
   const portaoPedestre = m.portaoPedestre ? 1 : 0;
 
   // Piscina
-  const p = inputs.piscina;
-  const areaPiscina = p.largura * p.comprimento;
-  const perimetroPiscina = 2 * (p.largura + p.comprimento);
-  const volumePiscina = areaPiscina * p.profundidade;
-  const areaRevestPiscina = areaPiscina + (perimetroPiscina * p.profundidade * 2);
-  const temPiscina = (areaPiscina > 0 && p.profundidade > 0) ? 1 : 0;
+  const p = inputs.piscina || {} as any;
+  const areaPiscina = (p.largura || 0) * (p.comprimento || 0);
+  const perimetroPiscina = 2 * ((p.largura || 0) + (p.comprimento || 0));
+  const volumePiscina = areaPiscina * (p.profundidade || 0);
+  const areaRevestPiscina = areaPiscina + (perimetroPiscina * (p.profundidade || 0) * 2);
+  const temPiscina = (areaPiscina > 0 && (p.profundidade || 0) > 0) ? 1 : 0;
   const casaMaquinas = p.casaMaquinas ? 1 : 0;
 
-  // Pintura externa flags
   const isPinturaAcrilica = inputs.tipoPinturaExterna === 'ACRILICA' ? 1 : 0;
   const isPinturaTextura = inputs.tipoPinturaExterna === 'TEXTURA' ? 1 : 0;
 
@@ -215,10 +287,17 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     // Muro
     perimetroMuro,
     areaMuro,
-    fatorFaceReboco,
-    fatorFacePintura,
+    areaMuroFrente1Face,
+    areaMuroLaterais1Face,
+    areaMuroFundo1Face,
+    areaMuroChapisco_m2,
+    areaMuroReboco_m2,
+    areaMuroPintura_m2,
     portaoGaragem,
     portaoPedestre,
+    // Legacy muro (backward compat)
+    fatorFaceReboco: 0,
+    fatorFacePintura: 0,
     // Piscina
     areaPiscina,
     perimetroPiscina,
