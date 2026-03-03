@@ -410,29 +410,39 @@
     "inclui_mo": true
   },
   {
-    "id": "muro_reboco",
+    "id": "muro_chapisco",
     "grupo": "Muro",
     "codigo": "MR-02",
+    "descricao": "Chapisco de muro",
+    "unidade": "m²",
+    "qtd_expr": "areaMuroChapisco_m2",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "muro_reboco",
+    "grupo": "Muro",
+    "codigo": "MR-03",
     "descricao": "Reboco de muro",
     "unidade": "m²",
-    "qtd_expr": "areaMuro * fatorFaceReboco",
+    "qtd_expr": "areaMuroReboco_m2",
     "inclui_material": true,
     "inclui_mo": true
   },
   {
     "id": "muro_pintura",
     "grupo": "Muro",
-    "codigo": "MR-03",
+    "codigo": "MR-04",
     "descricao": "Pintura de muro",
     "unidade": "m²",
-    "qtd_expr": "areaMuro * fatorFacePintura",
+    "qtd_expr": "areaMuroPintura_m2",
     "inclui_material": true,
     "inclui_mo": true
   },
   {
     "id": "portao_garagem",
     "grupo": "Muro",
-    "codigo": "MR-04",
+    "codigo": "MR-05",
     "descricao": "Portão de garagem",
     "unidade": "un",
     "qtd_expr": "portaoGaragem",
@@ -442,7 +452,7 @@
   {
     "id": "portao_pedestre",
     "grupo": "Muro",
-    "codigo": "MR-05",
+    "codigo": "MR-06",
     "descricao": "Portão pedestre",
     "unidade": "un",
     "qtd_expr": "portaoPedestre",

@@ -40,6 +40,7 @@
   "tanque": { "material_unit": 250.00, "mo_unit": 80.00 },
   "forro_pvc": { "material_unit": 32.00, "mo_unit": 18.00 },
   "muro_alvenaria": { "material_unit": 34.00, "mo_unit": 30.00 },
+  "muro_chapisco": { "material_unit": 3.50, "mo_unit": 5.50 },
   "muro_reboco": { "material_unit": 8.00, "mo_unit": 16.00 },
   "muro_pintura": { "material_unit": 9.00, "mo_unit": 11.00 },
   "portao_garagem": { "material_unit": 2800.00, "mo_unit": 600.00 },

@@ -103,6 +103,10 @@
     { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.5, "categoria": "argamassa" },
     { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.018, "categoria": "argamassa" }
   ],
+  "muro_chapisco": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.15, "categoria": "argamassa" },
+    { "materialId": "areia_grossa", "descricao": "Areia grossa", "unidade": "m³", "coef_por_unidade_servico": 0.004, "categoria": "argamassa" }
+  ],
   "muro_reboco": [
     { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.28, "categoria": "argamassa" },
     { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.02, "categoria": "argamassa" },

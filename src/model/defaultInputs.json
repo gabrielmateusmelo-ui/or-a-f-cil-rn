@@ -35,8 +35,23 @@
     "ladoDir": 0,
     "ladoEsq": 0,
     "altura": 2.0,
-    "rebocar": "NAO",
-    "pintar": "NAO",
+    "acabamentos": {
+      "chapisco": {
+        "frente": { "interna": false, "externa": false },
+        "laterais": { "interna": false, "externa": false },
+        "fundo": { "interna": false, "externa": false }
+      },
+      "reboco": {
+        "frente": { "interna": false, "externa": false },
+        "laterais": { "interna": false, "externa": false },
+        "fundo": { "interna": false, "externa": false }
+      },
+      "pintura": {
+        "frente": { "interna": false, "externa": false },
+        "laterais": { "interna": false, "externa": false },
+        "fundo": { "interna": false, "externa": false }
+      }
+    },
     "portaoGaragem": false,
     "portaoPedestre": false
   },
