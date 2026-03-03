@@ -75,7 +75,7 @@
     "codigo": "AL-01",
     "descricao": "Alvenaria de vedação externa (bloco 14cm)",
     "unidade": "m²",
-    "qtd_expr": "areaParede",
+    "qtd_expr": "areaParedeExternaLiquida",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -85,7 +85,7 @@
     "codigo": "AL-02",
     "descricao": "Alvenaria de vedação interna (bloco 9cm)",
     "unidade": "m²",
-    "qtd_expr": "areaParedeInterna",
+    "qtd_expr": "areaParedeInterna1Face",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -123,9 +123,9 @@
     "id": "telhado",
     "grupo": "Cobertura",
     "codigo": "CB-01",
-    "descricao": "Cobertura (conforme tipo)",
+    "descricao": "Cobertura com telhas (fibro/cerâmica)",
     "unidade": "m²",
-    "qtd_expr": "areaTelhado",
+    "qtd_expr": "areaTelhado * (isFibro + isCeram)",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -135,7 +135,17 @@
     "codigo": "CB-02",
     "descricao": "Estrutura de madeira para telhado",
     "unidade": "m²",
-    "qtd_expr": "areaTelhado",
+    "qtd_expr": "areaTelhado * (isFibro + isCeram)",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "impermeabilizacao_cobertura",
+    "grupo": "Cobertura",
+    "codigo": "CB-04",
+    "descricao": "Impermeabilização de laje de cobertura",
+    "unidade": "m²",
+    "qtd_expr": "areaTelhado * isLaje",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -145,7 +155,7 @@
     "codigo": "RV-01",
     "descricao": "Chapisco externo",
     "unidade": "m²",
-    "qtd_expr": "areaParede",
+    "qtd_expr": "areaParedeExternaLiquida",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -155,7 +165,7 @@
     "codigo": "RV-02",
     "descricao": "Reboco externo",
     "unidade": "m²",
-    "qtd_expr": "areaParede",
+    "qtd_expr": "areaParedeExternaLiquida",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -165,7 +175,7 @@
     "codigo": "RV-03",
     "descricao": "Chapisco interno",
     "unidade": "m²",
-    "qtd_expr": "areaParedeInterna + areaParede",
+    "qtd_expr": "areaParedeExternaLiquida + areaParedeInterna2Faces",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -175,7 +185,7 @@
     "codigo": "RV-04",
     "descricao": "Reboco interno",
     "unidade": "m²",
-    "qtd_expr": "areaParedeInterna + areaParede - areaRevestimentoCeramico",
+    "qtd_expr": "areaParedeExternaLiquida + areaParedeInterna2Faces - areaRevestimentoCeramicoParede",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -185,7 +195,7 @@
     "codigo": "RV-05",
     "descricao": "Revestimento cerâmico em paredes (áreas molhadas)",
     "unidade": "m²",
-    "qtd_expr": "areaRevestimentoCeramico",
+    "qtd_expr": "areaRevestimentoCeramicoParede",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -200,19 +210,29 @@
     "inclui_mo": true
   },
   {
-    "id": "piso_ceramico",
+    "id": "piso_seco",
     "grupo": "Pisos",
     "codigo": "PI-02",
-    "descricao": "Piso cerâmico",
+    "descricao": "Piso cerâmico (áreas secas)",
     "unidade": "m²",
-    "qtd_expr": "areaConstruida - areaVaranda",
+    "qtd_expr": "areaSeca",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "piso_molhado",
+    "grupo": "Pisos",
+    "codigo": "PI-03",
+    "descricao": "Piso cerâmico (áreas molhadas)",
+    "unidade": "m²",
+    "qtd_expr": "areaMolhadas",
     "inclui_material": true,
     "inclui_mo": true
   },
   {
     "id": "piso_varanda",
     "grupo": "Pisos",
-    "codigo": "PI-03",
+    "codigo": "PI-04",
     "descricao": "Piso cerâmico na varanda",
     "unidade": "m²",
     "qtd_expr": "areaVaranda",
@@ -222,7 +242,7 @@
   {
     "id": "calcada",
     "grupo": "Pisos",
-    "codigo": "PI-04",
+    "codigo": "PI-05",
     "descricao": "Calçada em concreto",
     "unidade": "m²",
     "qtd_expr": "areaCalcada",
@@ -285,7 +305,7 @@
     "codigo": "PT-01",
     "descricao": "Pintura interna (PVA 2 demãos)",
     "unidade": "m²",
-    "qtd_expr": "(areaParedeInterna + areaParede - areaRevestimentoCeramico) + areaConstruida",
+    "qtd_expr": "(areaParedeExternaLiquida + areaParedeInterna2Faces - areaRevestimentoCeramicoParede) + areaTeto",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -295,7 +315,7 @@
     "codigo": "PT-02",
     "descricao": "Pintura externa (acrílica 2 demãos)",
     "unidade": "m²",
-    "qtd_expr": "areaParede",
+    "qtd_expr": "areaParedeExternaLiquida",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -365,7 +385,7 @@
     "codigo": "CB-03",
     "descricao": "Forro de PVC",
     "unidade": "m²",
-    "qtd_expr": "areaConstruida",
+    "qtd_expr": "areaTeto",
     "inclui_material": true,
     "inclui_mo": true
   }

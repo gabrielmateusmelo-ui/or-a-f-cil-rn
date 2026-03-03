@@ -53,8 +53,13 @@
     { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.4, "categoria": "concreto" },
     { "materialId": "areia_media", "descricao": "Areia média", "unidade": "m³", "coef_por_unidade_servico": 0.03, "categoria": "concreto" }
   ],
-  "piso_ceramico": [
+  "piso_seco": [
     { "materialId": "ceramica_piso", "descricao": "Cerâmica de piso 60x60", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "ceramica" },
+    { "materialId": "argamassa_colante", "descricao": "Argamassa colante AC-II 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.25, "categoria": "argamassa" },
+    { "materialId": "rejunte", "descricao": "Rejunte 5kg", "unidade": "sc", "coef_por_unidade_servico": 0.08, "categoria": "ceramica" }
+  ],
+  "piso_molhado": [
+    { "materialId": "ceramica_piso_antiderrap", "descricao": "Cerâmica antiderrapante piso", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "ceramica" },
     { "materialId": "argamassa_colante", "descricao": "Argamassa colante AC-II 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.25, "categoria": "argamassa" },
     { "materialId": "rejunte", "descricao": "Rejunte 5kg", "unidade": "sc", "coef_por_unidade_servico": 0.08, "categoria": "ceramica" }
   ],
@@ -81,6 +86,10 @@
   ],
   "estrutura_madeira_telhado": [
     { "materialId": "madeiramento", "descricao": "Madeiramento (caibros e ripas)", "unidade": "m²", "coef_por_unidade_servico": 1.0, "categoria": "madeira" }
+  ],
+  "impermeabilizacao_cobertura": [
+    { "materialId": "manta_asfaltica_cobertura", "descricao": "Manta asfáltica 4mm (cobertura)", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "impermeabilizacao" },
+    { "materialId": "primer_asfaltico", "descricao": "Primer asfáltico", "unidade": "L", "coef_por_unidade_servico": 0.4, "categoria": "impermeabilizacao" }
   ],
   "forro_pvc": [
     { "materialId": "forro_pvc_material", "descricao": "Forro PVC liso 200mm", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "outros" }

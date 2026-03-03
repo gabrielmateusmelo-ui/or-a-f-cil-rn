@@ -26,6 +26,8 @@ const categoriaPerda: Record<string, string> = {
   tinta: 'tinta_pct',
   concreto: 'concreto_pct',
   aco: 'aco_pct',
+  alvenaria: 'blocos_pct',
+  cobertura: 'telha_pct',
 };
 
 export function calcMaterials(items: ServiceItem[], inputs: ProjectInputs): MaterialLine[] {
