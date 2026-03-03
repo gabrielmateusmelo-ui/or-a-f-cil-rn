@@ -67,6 +67,7 @@ export interface ProjectInputs {
     aco_pct: number;
     blocos_pct: number;
     telha_pct: number;
+    impermeab_pct: number;
   };
   bdiModo: 'automatico' | 'manual';
   bdiManual_pct: number;
@@ -110,7 +111,6 @@ export interface DerivedVars {
   isFibro: number;
   isCeram: number;
   isLaje: number;
-  // Muro
   perimetroMuro: number;
   areaMuro: number;
   areaMuroFrente1Face: number;
@@ -121,23 +121,19 @@ export interface DerivedVars {
   areaMuroPintura_m2: number;
   portaoGaragem: number;
   portaoPedestre: number;
-  // Piscina
   areaPiscina: number;
   perimetroPiscina: number;
   volumePiscina: number;
   areaRevestPiscina: number;
   temPiscina: number;
   casaMaquinas: number;
-  // Advanced
   areaExtraParedesPDduplo: number;
   isPinturaAcrilica: number;
   isPinturaTextura: number;
-  // Legacy aliases
   perimetro: number;
   areaParede: number;
   areaParedeInterna: number;
   areaRevestimentoCeramico: number;
-  // Legacy muro aliases (keep for backward compat)
   fatorFaceReboco: number;
   fatorFacePintura: number;
   [key: string]: number;
@@ -174,7 +170,6 @@ function calcMuroAcabArea(
 }
 
 export function derive(inputs: ProjectInputs): DerivedVars {
-  // Dimensions mode
   let areaConstruida: number;
   let largura: number;
   let comprimento: number;
@@ -207,7 +202,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
 
   const areaExtraParedesPDduplo = inputs.pedireitoDuplo_area_m2 * Math.max(0, inputs.pedireitoDuplo_altura_m - inputs.peDireito_m);
 
-  // Ceramic wall coverage
   let areaRevestimentoCeramicoParede: number;
   if (inputs.areaRevestParedeOverride_m2 > 0) {
     areaRevestimentoCeramicoParede = inputs.areaRevestParedeOverride_m2;
@@ -216,7 +210,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     areaRevestimentoCeramicoParede = areaRevest * (inputs.alturaRevestParede_m / 1.5);
   }
 
-  // Roof
   const fatorTelhado = inputs.tipoCobertura === 'laje impermeabilizada' ? 1.0 : 1.15;
   const areaTelhado = areaConstruida * fatorTelhado;
 
@@ -224,7 +217,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const isCeram = inputs.tipoCobertura === 'cerâmica' ? 1 : 0;
   const isLaje = inputs.tipoCobertura === 'laje impermeabilizada' ? 1 : 0;
 
-  // Muro - with safe deep merge
   const m = inputs.muro || {} as any;
   const frente = m.frente || 0;
   const fundos = m.fundos || 0;
@@ -247,7 +239,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const portaoGaragem = m.portaoGaragem ? 1 : 0;
   const portaoPedestre = m.portaoPedestre ? 1 : 0;
 
-  // Piscina
   const p = inputs.piscina || {} as any;
   const areaPiscina = (p.largura || 0) * (p.comprimento || 0);
   const perimetroPiscina = 2 * ((p.largura || 0) + (p.comprimento || 0));
@@ -260,56 +251,25 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const isPinturaTextura = inputs.tipoPinturaExterna === 'TEXTURA' ? 1 : 0;
 
   return {
-    comprimento,
-    largura,
-    perimetroExterno,
-    perimetroInterno,
-    perimetroTotal,
-    areaParedeExternaBruta,
-    areaParedeExternaLiquida,
-    areaParedeInterna1Face,
-    areaParedeInterna2Faces,
-    areaTelhado,
-    areaTeto,
-    areaConstruida,
-    areaInterna,
-    areaSeca,
-    areaVaranda,
+    comprimento, largura,
+    perimetroExterno, perimetroInterno, perimetroTotal,
+    areaParedeExternaBruta, areaParedeExternaLiquida,
+    areaParedeInterna1Face, areaParedeInterna2Faces,
+    areaTelhado, areaTeto, areaConstruida,
+    areaInterna, areaSeca, areaVaranda,
     areaCalcada: inputs.areaCalcada_m2,
-    areaMolhadas,
-    areaRevestimentoCeramicoParede,
+    areaMolhadas, areaRevestimentoCeramicoParede,
     peDireito: inputs.peDireito_m,
-    numBanheiros: inputs.numBanheiros,
-    numQuartos: inputs.numQuartos,
-    isFibro,
-    isCeram,
-    isLaje,
-    // Muro
-    perimetroMuro,
-    areaMuro,
-    areaMuroFrente1Face,
-    areaMuroLaterais1Face,
-    areaMuroFundo1Face,
-    areaMuroChapisco_m2,
-    areaMuroReboco_m2,
-    areaMuroPintura_m2,
-    portaoGaragem,
-    portaoPedestre,
-    // Legacy muro (backward compat)
-    fatorFaceReboco: 0,
-    fatorFacePintura: 0,
-    // Piscina
-    areaPiscina,
-    perimetroPiscina,
-    volumePiscina,
-    areaRevestPiscina,
-    temPiscina,
-    casaMaquinas,
-    // Advanced
-    areaExtraParedesPDduplo,
-    isPinturaAcrilica,
-    isPinturaTextura,
-    // Legacy aliases
+    numBanheiros: inputs.numBanheiros, numQuartos: inputs.numQuartos,
+    isFibro, isCeram, isLaje,
+    perimetroMuro, areaMuro,
+    areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face,
+    areaMuroChapisco_m2, areaMuroReboco_m2, areaMuroPintura_m2,
+    portaoGaragem, portaoPedestre,
+    fatorFaceReboco: 0, fatorFacePintura: 0,
+    areaPiscina, perimetroPiscina, volumePiscina, areaRevestPiscina,
+    temPiscina, casaMaquinas,
+    areaExtraParedesPDduplo, isPinturaAcrilica, isPinturaTextura,
     perimetro: perimetroExterno,
     areaParede: areaParedeExternaLiquida,
     areaParedeInterna: areaParedeInterna2Faces,

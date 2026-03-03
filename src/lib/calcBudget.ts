@@ -23,8 +23,20 @@ export interface ServiceItem {
   error?: string;
 }
 
+export interface GroupSummary {
+  group: string;
+  subtotalComMat: number;
+  subtotalSemMat: number;
+  bdiComMat: number;
+  bdiSemMat: number;
+  totalComMat: number;
+  totalSemMat: number;
+  shareComMatPct: number;
+}
+
 export interface BudgetResult {
   items: ServiceItem[];
+  byGroup: GroupSummary[];
   subtotalComMaterial: number;
   subtotalSemMaterial: number;
   bdiPct: number;
@@ -39,20 +51,19 @@ export interface BudgetResult {
 
 const prices = pricesData as Record<string, { material_unit: number; mo_unit: number }>;
 
-// Multipliers by padrao and grupo applied to material_unit
 const padraoMultipliers: Record<string, Record<string, number>> = {
   'Baixo': {
     'Revestimento': 0.75, 'Pisos': 0.70, 'Pintura': 0.80,
     'Esquadrias': 0.65, 'Louças e Metais': 0.60,
     'Instalações Hidráulicas': 0.85, 'Instalações Elétricas': 0.85,
-    'Cobertura': 0.85,
+    'Cobertura': 0.85, 'Muro': 0.85, 'Piscina': 0.80,
   },
   'Médio': {},
   'Alto': {
     'Revestimento': 1.30, 'Pisos': 1.35, 'Pintura': 1.20,
     'Esquadrias': 1.50, 'Louças e Metais': 1.80,
     'Instalações Hidráulicas': 1.20, 'Instalações Elétricas': 1.20,
-    'Cobertura': 1.15,
+    'Cobertura': 1.15, 'Muro': 1.10, 'Piscina': 1.25,
   },
 };
 
@@ -99,6 +110,9 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
     }
 
     const price = prices[item.id] || { material_unit: 0, mo_unit: 0 };
+    if (!prices[item.id]) {
+      errors.push({ itemId: item.id, error: `Preço não encontrado em prices_RN.json para "${item.id}"` });
+    }
     const mult = getPadraoMultiplier(inputs.padrao, item.grupo);
     const matUnit = item.inclui_material ? price.material_unit * mult : 0;
     const moUnit = item.inclui_mo ? price.mo_unit : 0;
@@ -135,19 +149,55 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
   const bdiValorComMat = subtotalComMaterial * bdiPct;
   const bdiValorSemMat = subtotalSemMaterial * bdiPct;
 
+  const totalComMaterial = subtotalComMaterial + bdiValorComMat;
+  const totalSemMaterial = subtotalSemMaterial + bdiValorSemMat;
+
+  // Group summary
+  const groupMap = new Map<string, { subCM: number; subSM: number }>();
+  for (const item of items) {
+    const g = groupMap.get(item.grupo) || { subCM: 0, subSM: 0 };
+    g.subCM += item.totalComMaterial;
+    g.subSM += item.totalSemMaterial;
+    groupMap.set(item.grupo, g);
+  }
+
+  // Preserve group order from items
+  const groupOrder: string[] = [];
+  for (const item of items) {
+    if (!groupOrder.includes(item.grupo)) groupOrder.push(item.grupo);
+  }
+
+  const byGroup: GroupSummary[] = groupOrder.map((group) => {
+    const g = groupMap.get(group)!;
+    const bdiCM = subtotalComMaterial > 0 ? bdiValorComMat * (g.subCM / subtotalComMaterial) : 0;
+    const bdiSM = subtotalSemMaterial > 0 ? bdiValorSemMat * (g.subSM / subtotalSemMaterial) : 0;
+    const totCM = g.subCM + bdiCM;
+    return {
+      group,
+      subtotalComMat: g.subCM,
+      subtotalSemMat: g.subSM,
+      bdiComMat: bdiCM,
+      bdiSemMat: bdiSM,
+      totalComMat: totCM,
+      totalSemMat: g.subSM + bdiSM,
+      shareComMatPct: totalComMaterial > 0 ? (totCM / totalComMaterial) * 100 : 0,
+    };
+  }).filter((g) => g.subtotalComMat > 0 || g.subtotalSemMat > 0);
+
   const area = derived.areaConstruida;
 
   return {
     items,
+    byGroup,
     subtotalComMaterial,
     subtotalSemMaterial,
     bdiPct,
     bdiValorComMat,
     bdiValorSemMat,
-    totalComMaterial: subtotalComMaterial + bdiValorComMat,
-    totalSemMaterial: subtotalSemMaterial + bdiValorSemMat,
-    custoM2ComMat: area > 0 ? (subtotalComMaterial + bdiValorComMat) / area : 0,
-    custoM2SemMat: area > 0 ? (subtotalSemMaterial + bdiValorSemMat) / area : 0,
+    totalComMaterial,
+    totalSemMaterial,
+    custoM2ComMat: area > 0 ? totalComMaterial / area : 0,
+    custoM2SemMat: area > 0 ? totalSemMaterial / area : 0,
     errors,
   };
 }

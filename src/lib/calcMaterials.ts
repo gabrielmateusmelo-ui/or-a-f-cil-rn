@@ -28,6 +28,7 @@ const categoriaPerda: Record<string, string> = {
   aco: 'aco_pct',
   alvenaria: 'blocos_pct',
   cobertura: 'telha_pct',
+  impermeabilizacao: 'impermeab_pct',
 };
 
 export function calcMaterials(items: ServiceItem[], inputs: ProjectInputs): MaterialLine[] {

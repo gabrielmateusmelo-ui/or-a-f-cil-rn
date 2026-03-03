@@ -99,32 +99,68 @@
     { "materialId": "forro_pvc_material", "descricao": "Forro PVC liso 200mm", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "outros" }
   ],
   "muro_alvenaria": [
-    { "materialId": "bloco_14cm", "descricao": "Bloco cerâmico 14x19x39", "unidade": "un", "coef_por_unidade_servico": 13, "categoria": "alvenaria" },
-    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.5, "categoria": "argamassa" },
-    { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.018, "categoria": "argamassa" }
+    { "materialId": "bloco_14cm", "descricao": "Bloco cerâmico 14x19x39", "unidade": "un", "coef_por_unidade_servico": 25, "categoria": "alvenaria" },
+    { "materialId": "arg_assent_muro", "descricao": "Argamassa de assentamento", "unidade": "kg", "coef_por_unidade_servico": 18, "categoria": "argamassa" }
   ],
   "muro_chapisco": [
-    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.15, "categoria": "argamassa" },
-    { "materialId": "areia_grossa", "descricao": "Areia grossa", "unidade": "m³", "coef_por_unidade_servico": 0.004, "categoria": "argamassa" }
+    { "materialId": "arg_chapisco_muro", "descricao": "Argamassa de chapisco", "unidade": "kg", "coef_por_unidade_servico": 4, "categoria": "argamassa" }
   ],
   "muro_reboco": [
-    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.28, "categoria": "argamassa" },
-    { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.02, "categoria": "argamassa" },
-    { "materialId": "cal_hidratada", "descricao": "Cal hidratada 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.22, "categoria": "argamassa" }
+    { "materialId": "arg_reboco_muro", "descricao": "Argamassa de reboco", "unidade": "kg", "coef_por_unidade_servico": 20, "categoria": "argamassa" }
   ],
   "muro_pintura": [
-    { "materialId": "tinta_acrilica", "descricao": "Tinta acrílica 18L", "unidade": "lata", "coef_por_unidade_servico": 0.017, "categoria": "tinta" },
-    { "materialId": "selador_acrilico", "descricao": "Selador acrílico 18L", "unidade": "lata", "coef_por_unidade_servico": 0.008, "categoria": "tinta" }
+    { "materialId": "tinta_muro", "descricao": "Tinta acrílica", "unidade": "L", "coef_por_unidade_servico": 0.18, "categoria": "tinta" },
+    { "materialId": "selador_muro", "descricao": "Selador acrílico", "unidade": "L", "coef_por_unidade_servico": 0.06, "categoria": "tinta" }
   ],
   "piscina_concreto": [
-    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 7.0, "categoria": "concreto" },
-    { "materialId": "areia_media", "descricao": "Areia média", "unidade": "m³", "coef_por_unidade_servico": 0.65, "categoria": "concreto" },
-    { "materialId": "brita_1", "descricao": "Brita 1", "unidade": "m³", "coef_por_unidade_servico": 0.85, "categoria": "concreto" },
-    { "materialId": "aco_ca50", "descricao": "Aço CA-50", "unidade": "kg", "coef_por_unidade_servico": 90, "categoria": "aco" }
+    { "materialId": "cimento_pisc", "descricao": "Cimento CP-II 50kg", "unidade": "kg", "coef_por_unidade_servico": 350, "categoria": "concreto" },
+    { "materialId": "areia_pisc", "descricao": "Areia média", "unidade": "m³", "coef_por_unidade_servico": 0.55, "categoria": "concreto" },
+    { "materialId": "brita_pisc", "descricao": "Brita 1", "unidade": "m³", "coef_por_unidade_servico": 0.75, "categoria": "concreto" }
   ],
   "piscina_revest": [
-    { "materialId": "ceramica_piscina", "descricao": "Cerâmica para piscina", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "ceramica" },
-    { "materialId": "argamassa_colante", "descricao": "Argamassa colante AC-III 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.3, "categoria": "argamassa" },
-    { "materialId": "rejunte_epoxi", "descricao": "Rejunte epóxi 5kg", "unidade": "sc", "coef_por_unidade_servico": 0.15, "categoria": "ceramica" }
+    { "materialId": "rev_pisc", "descricao": "Revestimento para piscina", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "ceramica" },
+    { "materialId": "arg_colante_pisc", "descricao": "Argamassa colante", "unidade": "kg", "coef_por_unidade_servico": 5, "categoria": "argamassa" },
+    { "materialId": "rejunte_pisc", "descricao": "Rejunte epóxi", "unidade": "kg", "coef_por_unidade_servico": 0.5, "categoria": "ceramica" }
+  ],
+  "piscina_filtragem": [
+    { "materialId": "kit_filtragem", "descricao": "Kit de filtragem completo", "unidade": "un", "coef_por_unidade_servico": 1, "categoria": "outros" }
+  ],
+  "ext_grama": [
+    { "materialId": "grama_m2", "descricao": "Grama em placas", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "outros" },
+    { "materialId": "terra_veg", "descricao": "Terra vegetal", "unidade": "m³", "coef_por_unidade_servico": 0.08, "categoria": "outros" }
+  ],
+  "ext_piso": [
+    { "materialId": "piso_ext_m2", "descricao": "Piso externo", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "ceramica" },
+    { "materialId": "arg_colante_ext", "descricao": "Argamassa colante", "unidade": "kg", "coef_por_unidade_servico": 5, "categoria": "argamassa" },
+    { "materialId": "rejunte_ext", "descricao": "Rejunte", "unidade": "kg", "coef_por_unidade_servico": 0.5, "categoria": "ceramica" }
+  ],
+  "cob_rufos_calhas": [
+    { "materialId": "rufo_calha", "descricao": "Rufo/calha galvanizada", "unidade": "m", "coef_por_unidade_servico": 1, "categoria": "cobertura" }
+  ],
+  "cob_platibanda_reboco": [
+    { "materialId": "arg_reboco_platib", "descricao": "Argamassa de reboco", "unidade": "kg", "coef_por_unidade_servico": 20, "categoria": "argamassa" }
+  ],
+  "cob_imperm_laje": [
+    { "materialId": "manta_imperm_laje", "descricao": "Manta asfáltica 4mm", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "impermeabilizacao" },
+    { "materialId": "primer_imperm_laje", "descricao": "Primer asfáltico", "unidade": "L", "coef_por_unidade_servico": 0.15, "categoria": "impermeabilizacao" }
+  ],
+  "gesso_forro": [
+    { "materialId": "gesso_placa", "descricao": "Placa de gesso", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "outros" },
+    { "materialId": "perfil_met_gesso", "descricao": "Perfil metálico", "unidade": "m", "coef_por_unidade_servico": 0.8, "categoria": "outros" },
+    { "materialId": "parafuso_gesso", "descricao": "Parafusos", "unidade": "un", "coef_por_unidade_servico": 8, "categoria": "outros" }
+  ],
+  "sauna_pacote": [
+    { "materialId": "isolante_sauna", "descricao": "Isolante térmico", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "outros" },
+    { "materialId": "rev_sauna", "descricao": "Revestimento de sauna", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "outros" },
+    { "materialId": "equip_sauna", "descricao": "Equipamento sauna", "unidade": "vb", "coef_por_unidade_servico": 0.02, "categoria": "outros" }
+  ],
+  "inst_eletrica_ponto": [
+    { "materialId": "cabo_eletrico", "descricao": "Cabo elétrico", "unidade": "m", "coef_por_unidade_servico": 12, "categoria": "outros" },
+    { "materialId": "eletroduto", "descricao": "Eletroduto", "unidade": "m", "coef_por_unidade_servico": 6, "categoria": "outros" },
+    { "materialId": "caixa_eletrica", "descricao": "Caixa elétrica", "unidade": "un", "coef_por_unidade_servico": 1, "categoria": "outros" }
+  ],
+  "inst_hidraulica_ponto": [
+    { "materialId": "tubo_pvc", "descricao": "Tubo PVC", "unidade": "m", "coef_por_unidade_servico": 6, "categoria": "outros" },
+    { "materialId": "conexoes_pvc", "descricao": "Conexões PVC", "unidade": "un", "coef_por_unidade_servico": 4, "categoria": "outros" }
   ]
 }
