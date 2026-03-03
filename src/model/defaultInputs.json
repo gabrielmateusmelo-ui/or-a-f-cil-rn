@@ -1,0 +1,22 @@
+{
+  "areaConstruida_m2": 70,
+  "largura_m": 7,
+  "comprimento_m": 0,
+  "peDireito_m": 2.8,
+  "areaMolhadas_m2": 18,
+  "areaVaranda_m2": 6,
+  "areaCalcada_m2": 20,
+  "numBanheiros": 1,
+  "numQuartos": 2,
+  "tipoCobertura": "fibrocimento",
+  "padrao": "Médio",
+  "perdas": {
+    "ceramica_pct": 10,
+    "argamassa_pct": 10,
+    "tinta_pct": 10,
+    "concreto_pct": 5,
+    "aco_pct": 10
+  },
+  "bdiModo": "automatico",
+  "bdiManual_pct": 20
+}
