@@ -110,8 +110,8 @@ const Index = () => {
             </div>
 
             <div className="bg-card rounded-lg border border-border p-1">
-              {activeTab === 'com' && <ServicesTable items={result.items} hideZero={hideZero} search={search} mode="com" />}
-              {activeTab === 'sem' && <ServicesTable items={result.items} hideZero={hideZero} search={search} mode="sem" />}
+              {activeTab === 'com' && <ServicesTable items={result.items} byGroup={result.byGroup} hideZero={hideZero} search={search} mode="com" />}
+              {activeTab === 'sem' && <ServicesTable items={result.items} byGroup={result.byGroup} hideZero={hideZero} search={search} mode="sem" />}
               {activeTab === 'materiais' && <MaterialsTable materials={materials} search={search} />}
               {activeTab === 'equipe' && <LaborTable labor={labor} />}
             </div>

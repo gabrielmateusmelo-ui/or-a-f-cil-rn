@@ -17,7 +17,8 @@
     "concreto_pct": 5,
     "aco_pct": 10,
     "blocos_pct": 5,
-    "telha_pct": 8
+    "telha_pct": 8,
+    "impermeab_pct": 5
   },
   "bdiModo": "automatico",
   "bdiManual_pct": 20,
