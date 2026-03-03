@@ -1,0 +1,10 @@
+{
+  "pedreiro": { "descricao": "Pedreiro", "custoHH": 18.00 },
+  "servente": { "descricao": "Servente", "custoHH": 11.00 },
+  "pintor": { "descricao": "Pintor", "custoHH": 16.00 },
+  "eletricista": { "descricao": "Eletricista", "custoHH": 22.00 },
+  "encanador": { "descricao": "Encanador", "custoHH": 20.00 },
+  "armador": { "descricao": "Armador", "custoHH": 17.00 },
+  "carpinteiro": { "descricao": "Carpinteiro", "custoHH": 18.00 },
+  "azulejista": { "descricao": "Azulejista", "custoHH": 19.00 }
+}

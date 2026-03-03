@@ -81,6 +81,10 @@
     { "materialId": "tinta_acrilica", "descricao": "Tinta acrílica 18L", "unidade": "lata", "coef_por_unidade_servico": 0.017, "categoria": "tinta" },
     { "materialId": "selador_acrilico", "descricao": "Selador acrílico 18L", "unidade": "lata", "coef_por_unidade_servico": 0.008, "categoria": "tinta" }
   ],
+  "textura_externa": [
+    { "materialId": "textura_acrilica", "descricao": "Textura acrílica 25kg", "unidade": "lata", "coef_por_unidade_servico": 0.04, "categoria": "tinta" },
+    { "materialId": "selador_acrilico", "descricao": "Selador acrílico 18L", "unidade": "lata", "coef_por_unidade_servico": 0.008, "categoria": "tinta" }
+  ],
   "telhado": [
     { "materialId": "telha", "descricao": "Telha (conforme tipo)", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "cobertura" }
   ],
@@ -93,5 +97,30 @@
   ],
   "forro_pvc": [
     { "materialId": "forro_pvc_material", "descricao": "Forro PVC liso 200mm", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "outros" }
+  ],
+  "muro_alvenaria": [
+    { "materialId": "bloco_14cm", "descricao": "Bloco cerâmico 14x19x39", "unidade": "un", "coef_por_unidade_servico": 13, "categoria": "alvenaria" },
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.5, "categoria": "argamassa" },
+    { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.018, "categoria": "argamassa" }
+  ],
+  "muro_reboco": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.28, "categoria": "argamassa" },
+    { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.02, "categoria": "argamassa" },
+    { "materialId": "cal_hidratada", "descricao": "Cal hidratada 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.22, "categoria": "argamassa" }
+  ],
+  "muro_pintura": [
+    { "materialId": "tinta_acrilica", "descricao": "Tinta acrílica 18L", "unidade": "lata", "coef_por_unidade_servico": 0.017, "categoria": "tinta" },
+    { "materialId": "selador_acrilico", "descricao": "Selador acrílico 18L", "unidade": "lata", "coef_por_unidade_servico": 0.008, "categoria": "tinta" }
+  ],
+  "piscina_concreto": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 7.0, "categoria": "concreto" },
+    { "materialId": "areia_media", "descricao": "Areia média", "unidade": "m³", "coef_por_unidade_servico": 0.65, "categoria": "concreto" },
+    { "materialId": "brita_1", "descricao": "Brita 1", "unidade": "m³", "coef_por_unidade_servico": 0.85, "categoria": "concreto" },
+    { "materialId": "aco_ca50", "descricao": "Aço CA-50", "unidade": "kg", "coef_por_unidade_servico": 90, "categoria": "aco" }
+  ],
+  "piscina_revest": [
+    { "materialId": "ceramica_piscina", "descricao": "Cerâmica para piscina", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "ceramica" },
+    { "materialId": "argamassa_colante", "descricao": "Argamassa colante AC-III 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.3, "categoria": "argamassa" },
+    { "materialId": "rejunte_epoxi", "descricao": "Rejunte epóxi 5kg", "unidade": "sc", "coef_por_unidade_servico": 0.15, "categoria": "ceramica" }
   ]
 }

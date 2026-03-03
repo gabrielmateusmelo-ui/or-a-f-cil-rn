@@ -1,7 +1,7 @@
 {
   "areaConstruida_m2": 70,
   "largura_m": 7,
-  "comprimento_m": 0,
+  "comprimento_m": 10,
   "peDireito_m": 2.8,
   "areaMolhadas_m2": 18,
   "areaVaranda_m2": 6,
@@ -26,5 +26,28 @@
   "percPortasInternas_pct": 10,
   "alturaRevestParede_m": 1.50,
   "areaRevestParedeOverride_m2": 0,
-  "areaTetoExcluiVaranda": true
+  "areaTetoExcluiVaranda": true,
+  "dimensoesModo": "AREA",
+  "proporcaoLC": 1.0,
+  "muro": {
+    "frente": 0,
+    "fundos": 0,
+    "ladoDir": 0,
+    "ladoEsq": 0,
+    "altura": 2.0,
+    "rebocar": "NAO",
+    "pintar": "NAO",
+    "portaoGaragem": false,
+    "portaoPedestre": false
+  },
+  "piscina": {
+    "largura": 0,
+    "comprimento": 0,
+    "profundidade": 0,
+    "revest": "CERAMICA",
+    "casaMaquinas": false
+  },
+  "pedireitoDuplo_area_m2": 0,
+  "pedireitoDuplo_altura_m": 0,
+  "tipoPinturaExterna": "ACRILICA"
 }

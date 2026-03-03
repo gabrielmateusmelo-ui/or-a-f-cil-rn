@@ -113,6 +113,8 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
   const bdiValorComMat = subtotalComMaterial * bdiPct;
   const bdiValorSemMat = subtotalSemMaterial * bdiPct;
 
+  const area = derived.areaConstruida;
+
   return {
     items,
     subtotalComMaterial,
@@ -122,8 +124,8 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
     bdiValorSemMat,
     totalComMaterial: subtotalComMaterial + bdiValorComMat,
     totalSemMaterial: subtotalSemMaterial + bdiValorSemMat,
-    custoM2ComMat: inputs.areaConstruida_m2 > 0 ? (subtotalComMaterial + bdiValorComMat) / inputs.areaConstruida_m2 : 0,
-    custoM2SemMat: inputs.areaConstruida_m2 > 0 ? (subtotalSemMaterial + bdiValorSemMat) / inputs.areaConstruida_m2 : 0,
+    custoM2ComMat: area > 0 ? (subtotalComMaterial + bdiValorComMat) / area : 0,
+    custoM2SemMat: area > 0 ? (subtotalSemMaterial + bdiValorSemMat) / area : 0,
     errors,
   };
 }

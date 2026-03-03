@@ -31,11 +31,21 @@
   "quadro_distribuicao": { "material_unit": 350.00, "mo_unit": 180.00 },
   "pintura_interna": { "material_unit": 8.00, "mo_unit": 10.00 },
   "pintura_externa": { "material_unit": 10.00, "mo_unit": 12.00 },
+  "textura_externa": { "material_unit": 18.00, "mo_unit": 15.00 },
   "esquadrias_portas": { "material_unit": 380.00, "mo_unit": 120.00 },
   "porta_entrada": { "material_unit": 650.00, "mo_unit": 150.00 },
   "janelas": { "material_unit": 420.00, "mo_unit": 85.00 },
   "loucas_metais": { "material_unit": 850.00, "mo_unit": 250.00 },
   "pia_cozinha": { "material_unit": 380.00, "mo_unit": 120.00 },
   "tanque": { "material_unit": 250.00, "mo_unit": 80.00 },
-  "forro_pvc": { "material_unit": 32.00, "mo_unit": 18.00 }
+  "forro_pvc": { "material_unit": 32.00, "mo_unit": 18.00 },
+  "muro_alvenaria": { "material_unit": 34.00, "mo_unit": 30.00 },
+  "muro_reboco": { "material_unit": 8.00, "mo_unit": 16.00 },
+  "muro_pintura": { "material_unit": 9.00, "mo_unit": 11.00 },
+  "portao_garagem": { "material_unit": 2800.00, "mo_unit": 600.00 },
+  "portao_pedestre": { "material_unit": 850.00, "mo_unit": 300.00 },
+  "piscina_escavacao": { "material_unit": 0, "mo_unit": 55.00 },
+  "piscina_concreto": { "material_unit": 420.00, "mo_unit": 280.00 },
+  "piscina_revest": { "material_unit": 65.00, "mo_unit": 45.00 },
+  "piscina_filtragem": { "material_unit": 4500.00, "mo_unit": 1500.00 }
 }
