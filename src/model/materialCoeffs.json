@@ -1,0 +1,88 @@
+{
+  "concreto_baldrame": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 7.0, "categoria": "concreto" },
+    { "materialId": "areia_media", "descricao": "Areia média", "unidade": "m³", "coef_por_unidade_servico": 0.65, "categoria": "concreto" },
+    { "materialId": "brita_1", "descricao": "Brita 1", "unidade": "m³", "coef_por_unidade_servico": 0.85, "categoria": "concreto" },
+    { "materialId": "aco_ca50", "descricao": "Aço CA-50", "unidade": "kg", "coef_por_unidade_servico": 110, "categoria": "aco" }
+  ],
+  "forma_baldrame": [
+    { "materialId": "tabua_pinus", "descricao": "Tábua de pinus 30cm", "unidade": "m", "coef_por_unidade_servico": 3.3, "categoria": "madeira" },
+    { "materialId": "pregos", "descricao": "Pregos 18x27", "unidade": "kg", "coef_por_unidade_servico": 0.15, "categoria": "outros" }
+  ],
+  "aco_fundacao": [
+    { "materialId": "aco_ca50", "descricao": "Aço CA-50", "unidade": "kg", "coef_por_unidade_servico": 1.1, "categoria": "aco" },
+    { "materialId": "arame_recozido", "descricao": "Arame recozido", "unidade": "kg", "coef_por_unidade_servico": 0.025, "categoria": "aco" }
+  ],
+  "impermeabilizacao_baldrame": [
+    { "materialId": "manta_asfaltica", "descricao": "Manta asfáltica 3mm", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "impermeabilizacao" }
+  ],
+  "alvenaria_externa": [
+    { "materialId": "bloco_14cm", "descricao": "Bloco cerâmico 14x19x39", "unidade": "un", "coef_por_unidade_servico": 13, "categoria": "alvenaria" },
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.5, "categoria": "argamassa" },
+    { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.018, "categoria": "argamassa" }
+  ],
+  "alvenaria_interna": [
+    { "materialId": "bloco_9cm", "descricao": "Bloco cerâmico 9x19x39", "unidade": "un", "coef_por_unidade_servico": 13, "categoria": "alvenaria" },
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.45, "categoria": "argamassa" },
+    { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.016, "categoria": "argamassa" }
+  ],
+  "chapisco_externo": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.15, "categoria": "argamassa" },
+    { "materialId": "areia_grossa", "descricao": "Areia grossa", "unidade": "m³", "coef_por_unidade_servico": 0.004, "categoria": "argamassa" }
+  ],
+  "reboco_externo": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.3, "categoria": "argamassa" },
+    { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.02, "categoria": "argamassa" },
+    { "materialId": "cal_hidratada", "descricao": "Cal hidratada 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.25, "categoria": "argamassa" }
+  ],
+  "chapisco_interno": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.15, "categoria": "argamassa" },
+    { "materialId": "areia_grossa", "descricao": "Areia grossa", "unidade": "m³", "coef_por_unidade_servico": 0.004, "categoria": "argamassa" }
+  ],
+  "reboco_interno": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.25, "categoria": "argamassa" },
+    { "materialId": "areia_fina", "descricao": "Areia fina", "unidade": "m³", "coef_por_unidade_servico": 0.018, "categoria": "argamassa" },
+    { "materialId": "cal_hidratada", "descricao": "Cal hidratada 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.22, "categoria": "argamassa" }
+  ],
+  "revestimento_ceramico": [
+    { "materialId": "ceramica_parede", "descricao": "Cerâmica de parede 30x60", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "ceramica" },
+    { "materialId": "argamassa_colante", "descricao": "Argamassa colante AC-II 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.25, "categoria": "argamassa" },
+    { "materialId": "rejunte", "descricao": "Rejunte 5kg", "unidade": "sc", "coef_por_unidade_servico": 0.1, "categoria": "ceramica" }
+  ],
+  "contrapiso": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.4, "categoria": "concreto" },
+    { "materialId": "areia_media", "descricao": "Areia média", "unidade": "m³", "coef_por_unidade_servico": 0.03, "categoria": "concreto" }
+  ],
+  "piso_ceramico": [
+    { "materialId": "ceramica_piso", "descricao": "Cerâmica de piso 60x60", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "ceramica" },
+    { "materialId": "argamassa_colante", "descricao": "Argamassa colante AC-II 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.25, "categoria": "argamassa" },
+    { "materialId": "rejunte", "descricao": "Rejunte 5kg", "unidade": "sc", "coef_por_unidade_servico": 0.08, "categoria": "ceramica" }
+  ],
+  "piso_varanda": [
+    { "materialId": "ceramica_piso_ext", "descricao": "Cerâmica antiderrapante", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "ceramica" },
+    { "materialId": "argamassa_colante", "descricao": "Argamassa colante AC-III 20kg", "unidade": "sc", "coef_por_unidade_servico": 0.28, "categoria": "argamassa" }
+  ],
+  "calcada": [
+    { "materialId": "cimento", "descricao": "Cimento CP-II 50kg", "unidade": "sc", "coef_por_unidade_servico": 0.5, "categoria": "concreto" },
+    { "materialId": "areia_media", "descricao": "Areia média", "unidade": "m³", "coef_por_unidade_servico": 0.035, "categoria": "concreto" },
+    { "materialId": "brita_1", "descricao": "Brita 1", "unidade": "m³", "coef_por_unidade_servico": 0.04, "categoria": "concreto" }
+  ],
+  "pintura_interna": [
+    { "materialId": "tinta_pva", "descricao": "Tinta PVA 18L", "unidade": "lata", "coef_por_unidade_servico": 0.017, "categoria": "tinta" },
+    { "materialId": "massa_corrida", "descricao": "Massa corrida PVA 25kg", "unidade": "lata", "coef_por_unidade_servico": 0.025, "categoria": "tinta" },
+    { "materialId": "selador_pva", "descricao": "Selador PVA 18L", "unidade": "lata", "coef_por_unidade_servico": 0.008, "categoria": "tinta" }
+  ],
+  "pintura_externa": [
+    { "materialId": "tinta_acrilica", "descricao": "Tinta acrílica 18L", "unidade": "lata", "coef_por_unidade_servico": 0.017, "categoria": "tinta" },
+    { "materialId": "selador_acrilico", "descricao": "Selador acrílico 18L", "unidade": "lata", "coef_por_unidade_servico": 0.008, "categoria": "tinta" }
+  ],
+  "telhado": [
+    { "materialId": "telha", "descricao": "Telha (conforme tipo)", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "cobertura" }
+  ],
+  "estrutura_madeira_telhado": [
+    { "materialId": "madeiramento", "descricao": "Madeiramento (caibros e ripas)", "unidade": "m²", "coef_por_unidade_servico": 1.0, "categoria": "madeira" }
+  ],
+  "forro_pvc": [
+    { "materialId": "forro_pvc_material", "descricao": "Forro PVC liso 200mm", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "outros" }
+  ]
+}

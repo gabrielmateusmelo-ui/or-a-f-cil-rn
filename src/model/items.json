@@ -1,0 +1,372 @@
+[
+  {
+    "id": "limpeza_terreno",
+    "grupo": "Serviços Preliminares",
+    "codigo": "SP-01",
+    "descricao": "Limpeza do terreno",
+    "unidade": "m²",
+    "qtd_expr": "areaConstruida * 1.3",
+    "inclui_material": false,
+    "inclui_mo": true
+  },
+  {
+    "id": "locacao_obra",
+    "grupo": "Serviços Preliminares",
+    "codigo": "SP-02",
+    "descricao": "Locação da obra",
+    "unidade": "m²",
+    "qtd_expr": "areaConstruida",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "escavacao_baldrame",
+    "grupo": "Fundação",
+    "codigo": "FD-01",
+    "descricao": "Escavação de valas para baldrame",
+    "unidade": "m³",
+    "qtd_expr": "perimetroTotal * 0.4 * 0.5",
+    "inclui_material": false,
+    "inclui_mo": true
+  },
+  {
+    "id": "concreto_baldrame",
+    "grupo": "Fundação",
+    "codigo": "FD-02",
+    "descricao": "Concreto armado para baldrame",
+    "unidade": "m³",
+    "qtd_expr": "perimetroTotal * 0.3 * 0.3",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "forma_baldrame",
+    "grupo": "Fundação",
+    "codigo": "FD-03",
+    "descricao": "Forma de madeira para baldrame",
+    "unidade": "m²",
+    "qtd_expr": "perimetroTotal * 0.3 * 2",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "aco_fundacao",
+    "grupo": "Fundação",
+    "codigo": "FD-04",
+    "descricao": "Armação de aço para fundação",
+    "unidade": "kg",
+    "qtd_expr": "perimetroTotal * 0.3 * 0.3 * 110",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "impermeabilizacao_baldrame",
+    "grupo": "Fundação",
+    "codigo": "FD-05",
+    "descricao": "Impermeabilização de baldrame",
+    "unidade": "m²",
+    "qtd_expr": "perimetroTotal * 0.3",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "alvenaria_externa",
+    "grupo": "Alvenaria",
+    "codigo": "AL-01",
+    "descricao": "Alvenaria de vedação externa (bloco 14cm)",
+    "unidade": "m²",
+    "qtd_expr": "areaParede",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "alvenaria_interna",
+    "grupo": "Alvenaria",
+    "codigo": "AL-02",
+    "descricao": "Alvenaria de vedação interna (bloco 9cm)",
+    "unidade": "m²",
+    "qtd_expr": "areaParedeInterna",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "verga_contraverga",
+    "grupo": "Estrutura",
+    "codigo": "ES-01",
+    "descricao": "Vergas e contravergas",
+    "unidade": "m",
+    "qtd_expr": "(numQuartos + numBanheiros + 3) * 2.4",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "pilar_concreto",
+    "grupo": "Estrutura",
+    "codigo": "ES-02",
+    "descricao": "Pilares de concreto armado",
+    "unidade": "m³",
+    "qtd_expr": "(perimetroTotal / 3) * 0.14 * 0.25 * peDireito",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "cinta_amarracao",
+    "grupo": "Estrutura",
+    "codigo": "ES-03",
+    "descricao": "Cinta de amarração superior",
+    "unidade": "m³",
+    "qtd_expr": "perimetroTotal * 0.14 * 0.15",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "telhado",
+    "grupo": "Cobertura",
+    "codigo": "CB-01",
+    "descricao": "Cobertura (conforme tipo)",
+    "unidade": "m²",
+    "qtd_expr": "areaTelhado",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "estrutura_madeira_telhado",
+    "grupo": "Cobertura",
+    "codigo": "CB-02",
+    "descricao": "Estrutura de madeira para telhado",
+    "unidade": "m²",
+    "qtd_expr": "areaTelhado",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "chapisco_externo",
+    "grupo": "Revestimento",
+    "codigo": "RV-01",
+    "descricao": "Chapisco externo",
+    "unidade": "m²",
+    "qtd_expr": "areaParede",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "reboco_externo",
+    "grupo": "Revestimento",
+    "codigo": "RV-02",
+    "descricao": "Reboco externo",
+    "unidade": "m²",
+    "qtd_expr": "areaParede",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "chapisco_interno",
+    "grupo": "Revestimento",
+    "codigo": "RV-03",
+    "descricao": "Chapisco interno",
+    "unidade": "m²",
+    "qtd_expr": "areaParedeInterna + areaParede",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "reboco_interno",
+    "grupo": "Revestimento",
+    "codigo": "RV-04",
+    "descricao": "Reboco interno",
+    "unidade": "m²",
+    "qtd_expr": "areaParedeInterna + areaParede - areaRevestimentoCeramico",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "revestimento_ceramico",
+    "grupo": "Revestimento",
+    "codigo": "RV-05",
+    "descricao": "Revestimento cerâmico em paredes (áreas molhadas)",
+    "unidade": "m²",
+    "qtd_expr": "areaRevestimentoCeramico",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "contrapiso",
+    "grupo": "Pisos",
+    "codigo": "PI-01",
+    "descricao": "Contrapiso (lastro de concreto)",
+    "unidade": "m²",
+    "qtd_expr": "areaConstruida",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "piso_ceramico",
+    "grupo": "Pisos",
+    "codigo": "PI-02",
+    "descricao": "Piso cerâmico",
+    "unidade": "m²",
+    "qtd_expr": "areaConstruida - areaVaranda",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "piso_varanda",
+    "grupo": "Pisos",
+    "codigo": "PI-03",
+    "descricao": "Piso cerâmico na varanda",
+    "unidade": "m²",
+    "qtd_expr": "areaVaranda",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "calcada",
+    "grupo": "Pisos",
+    "codigo": "PI-04",
+    "descricao": "Calçada em concreto",
+    "unidade": "m²",
+    "qtd_expr": "areaCalcada",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "instalacao_hidraulica",
+    "grupo": "Instalações Hidráulicas",
+    "codigo": "IH-01",
+    "descricao": "Instalações hidráulicas (água fria)",
+    "unidade": "pt",
+    "qtd_expr": "numBanheiros * 5 + 4",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "instalacao_esgoto",
+    "grupo": "Instalações Hidráulicas",
+    "codigo": "IH-02",
+    "descricao": "Instalações de esgoto",
+    "unidade": "pt",
+    "qtd_expr": "numBanheiros * 4 + 3",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "fossa_sumidouro",
+    "grupo": "Instalações Hidráulicas",
+    "codigo": "IH-03",
+    "descricao": "Fossa séptica e sumidouro",
+    "unidade": "un",
+    "qtd_expr": "1",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "instalacao_eletrica",
+    "grupo": "Instalações Elétricas",
+    "codigo": "IE-01",
+    "descricao": "Instalações elétricas (pontos)",
+    "unidade": "pt",
+    "qtd_expr": "numQuartos * 5 + numBanheiros * 3 + 15",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "quadro_distribuicao",
+    "grupo": "Instalações Elétricas",
+    "codigo": "IE-02",
+    "descricao": "Quadro de distribuição",
+    "unidade": "un",
+    "qtd_expr": "1",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "pintura_interna",
+    "grupo": "Pintura",
+    "codigo": "PT-01",
+    "descricao": "Pintura interna (PVA 2 demãos)",
+    "unidade": "m²",
+    "qtd_expr": "(areaParedeInterna + areaParede - areaRevestimentoCeramico) + areaConstruida",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "pintura_externa",
+    "grupo": "Pintura",
+    "codigo": "PT-02",
+    "descricao": "Pintura externa (acrílica 2 demãos)",
+    "unidade": "m²",
+    "qtd_expr": "areaParede",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "esquadrias_portas",
+    "grupo": "Esquadrias",
+    "codigo": "EQ-01",
+    "descricao": "Portas internas de madeira (completa)",
+    "unidade": "un",
+    "qtd_expr": "numQuartos + numBanheiros + 2",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "porta_entrada",
+    "grupo": "Esquadrias",
+    "codigo": "EQ-02",
+    "descricao": "Porta de entrada (madeira maciça)",
+    "unidade": "un",
+    "qtd_expr": "1",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "janelas",
+    "grupo": "Esquadrias",
+    "codigo": "EQ-03",
+    "descricao": "Janelas de alumínio",
+    "unidade": "un",
+    "qtd_expr": "numQuartos + numBanheiros + 2",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "loucas_metais",
+    "grupo": "Louças e Metais",
+    "codigo": "LM-01",
+    "descricao": "Louças sanitárias (vaso + lavatório)",
+    "unidade": "cj",
+    "qtd_expr": "numBanheiros",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "pia_cozinha",
+    "grupo": "Louças e Metais",
+    "codigo": "LM-02",
+    "descricao": "Pia de cozinha inox",
+    "unidade": "un",
+    "qtd_expr": "1",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "tanque",
+    "grupo": "Louças e Metais",
+    "codigo": "LM-03",
+    "descricao": "Tanque de lavar roupa",
+    "unidade": "un",
+    "qtd_expr": "1",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "forro_pvc",
+    "grupo": "Cobertura",
+    "codigo": "CB-03",
+    "descricao": "Forro de PVC",
+    "unidade": "m²",
+    "qtd_expr": "areaConstruida",
+    "inclui_material": true,
+    "inclui_mo": true
+  }
+]
