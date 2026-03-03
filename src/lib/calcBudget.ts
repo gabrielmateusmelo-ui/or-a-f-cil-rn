@@ -18,6 +18,8 @@ export interface ServiceItem {
   abcClassSemMat?: 'A' | 'B' | 'C';
   abcPct?: number;
   abcPctSemMat?: number;
+  abcCumPct?: number;
+  abcCumPctSemMat?: number;
   error?: string;
 }
 
@@ -45,21 +47,21 @@ function calcBdiPct(inputs: ProjectInputs): number {
   return 0.20 * (fator[inputs.padrao] ?? 0.90);
 }
 
-function classifyABC(items: { id: string; total: number }[]): Map<string, { cls: 'A' | 'B' | 'C'; pct: number }> {
+function classifyABC(items: { id: string; total: number }[]): Map<string, { cls: 'A' | 'B' | 'C'; pct: number; cumPct: number }> {
   const sorted = [...items].sort((a, b) => b.total - a.total);
   const grandTotal = sorted.reduce((s, i) => s + i.total, 0);
-  const result = new Map<string, { cls: 'A' | 'B' | 'C'; pct: number }>();
+  const result = new Map<string, { cls: 'A' | 'B' | 'C'; pct: number; cumPct: number }>();
   if (grandTotal === 0) return result;
 
   let acc = 0;
   for (const item of sorted) {
     acc += item.total;
     const pct = (item.total / grandTotal) * 100;
-    const accPct = (acc / grandTotal) * 100;
+    const cumPct = (acc / grandTotal) * 100;
     let cls: 'A' | 'B' | 'C' = 'C';
-    if (accPct <= 80) cls = 'A';
-    else if (accPct <= 95) cls = 'B';
-    result.set(item.id, { cls, pct });
+    if (cumPct <= 80) cls = 'A';
+    else if (cumPct <= 95) cls = 'B';
+    result.set(item.id, { cls, pct, cumPct });
   }
   return result;
 }
@@ -101,8 +103,8 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
   for (const item of items) {
     const cm = abcComMat.get(item.id);
     const sm = abcSemMat.get(item.id);
-    if (cm) { item.abcClass = cm.cls; item.abcPct = cm.pct; }
-    if (sm) { item.abcClassSemMat = sm.cls; item.abcPctSemMat = sm.pct; }
+    if (cm) { item.abcClass = cm.cls; item.abcPct = cm.pct; item.abcCumPct = cm.cumPct; }
+    if (sm) { item.abcClassSemMat = sm.cls; item.abcPctSemMat = sm.pct; item.abcCumPctSemMat = sm.cumPct; }
   }
 
   const subtotalComMaterial = items.reduce((s, i) => s + i.totalComMaterial, 0);

@@ -15,8 +15,16 @@
     "argamassa_pct": 10,
     "tinta_pct": 10,
     "concreto_pct": 5,
-    "aco_pct": 10
+    "aco_pct": 10,
+    "blocos_pct": 5,
+    "telha_pct": 8
   },
   "bdiModo": "automatico",
-  "bdiManual_pct": 20
+  "bdiManual_pct": 20,
+  "fatorParedesInternas": 0.60,
+  "percVaosExternos_pct": 15,
+  "percPortasInternas_pct": 10,
+  "alturaRevestParede_m": 1.50,
+  "areaRevestParedeOverride_m2": 0,
+  "areaTetoExcluiVaranda": true
 }
