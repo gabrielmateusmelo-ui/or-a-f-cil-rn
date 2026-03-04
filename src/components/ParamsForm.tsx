@@ -1,6 +1,7 @@
-import { ProjectInputs, MuroInputs, MuroAcabamentos, MuroAcabamentoTrechos, MuroFaceConfig, PiscinaInputs, defaultMuroAcabamentos } from '@/lib/derive';
+import { ProjectInputs, MuroInputs, MuroAcabamentos, PiscinaInputs, Comodos, ComodoEntry, defaultMuroAcabamentos, safeComodos } from '@/lib/derive';
 import { useMemo } from 'react';
 import { derive } from '@/lib/derive';
+import React from 'react';
 
 interface Props {
   inputs: ProjectInputs;
@@ -52,7 +53,6 @@ const CheckboxField = ({ label, checked, onChange }: {
   </label>
 );
 
-// Muro acabamento matrix component
 function MuroAcabamentoGrid({ acabamentos, onChange }: {
   acabamentos: MuroAcabamentos;
   onChange: (a: MuroAcabamentos) => void;
@@ -95,20 +95,10 @@ function MuroAcabamentoGrid({ acabamentos, onChange }: {
                 {trechos.map(trecho => (
                   <React.Fragment key={trecho}>
                     <td className="text-center py-1 px-0.5">
-                      <input
-                        type="checkbox"
-                        checked={acabamentos[tipo][trecho].interna}
-                        onChange={() => toggle(tipo, trecho, 'interna')}
-                        className="rounded border-input h-3 w-3"
-                      />
+                      <input type="checkbox" checked={acabamentos[tipo][trecho].interna} onChange={() => toggle(tipo, trecho, 'interna')} className="rounded border-input h-3 w-3" />
                     </td>
                     <td className="text-center py-1 px-0.5">
-                      <input
-                        type="checkbox"
-                        checked={acabamentos[tipo][trecho].externa}
-                        onChange={() => toggle(tipo, trecho, 'externa')}
-                        className="rounded border-input h-3 w-3"
-                      />
+                      <input type="checkbox" checked={acabamentos[tipo][trecho].externa} onChange={() => toggle(tipo, trecho, 'externa')} className="rounded border-input h-3 w-3" />
                     </td>
                   </React.Fragment>
                 ))}
@@ -121,7 +111,21 @@ function MuroAcabamentoGrid({ acabamentos, onChange }: {
   );
 }
 
-import React from 'react';
+const COMODO_LABELS: Record<keyof Comodos, string> = {
+  quartos: 'Quartos',
+  banheiros: 'Banheiros',
+  lavabos: 'Lavabos',
+  cozinha: 'Cozinha',
+  sala: 'Sala',
+  jantar: 'Jantar',
+  servico: 'Serviço',
+  circulacao: 'Circulação',
+  varanda: 'Varanda',
+  garagem: 'Garagem',
+  gourmet: 'Gourmet',
+};
+
+const COMODO_KEYS = Object.keys(COMODO_LABELS) as (keyof Comodos)[];
 
 export default function ParamsForm({ inputs, onChange }: Props) {
   const set = <K extends keyof ProjectInputs>(key: K, val: ProjectInputs[K]) =>
@@ -136,12 +140,31 @@ export default function ParamsForm({ inputs, onChange }: Props) {
   const setPiscina = <K extends keyof PiscinaInputs>(key: K, val: PiscinaInputs[K]) =>
     onChange({ ...inputs, piscina: { ...inputs.piscina, [key]: val } });
 
-  // Safe acabamentos with fallback
+  const comodos = safeComodos(inputs.comodos);
+
+  const setComodo = (key: keyof Comodos, field: keyof ComodoEntry, val: number) => {
+    const updated = { ...comodos, [key]: { ...comodos[key], [field]: val } };
+    onChange({ ...inputs, comodos: updated });
+  };
+
   const acabamentos: MuroAcabamentos = inputs.muro?.acabamentos ?? defaultMuroAcabamentos();
 
   const derived = useMemo(() => derive(inputs), [inputs]);
 
   const isAreaMode = inputs.dimensoesModo === 'AREA';
+  const tipoCasa = inputs.tipoCasa || 'TERREA';
+  const temSubsolo = tipoCasa === 'TERREA_SUBSOLO' || tipoCasa === 'TERREA_SUBSOLO_1PAV';
+  const temPavSup = tipoCasa === 'TERREA_SUBSOLO_1PAV';
+
+  const somaComodos = derived.somaAreasComodos;
+  const diffPct = derived.areaConstruida > 0 ? Math.abs(somaComodos - derived.areaConstruida) / derived.areaConstruida * 100 : 0;
+
+  // Auto escadas
+  let escadasAuto = 0;
+  if (tipoCasa === 'TERREA_SUBSOLO') escadasAuto = 1;
+  if (tipoCasa === 'TERREA_SUBSOLO_1PAV') escadasAuto = 2;
+
+  const pdLocal = inputs.peDireitoDuploLocal || 'NENHUM';
 
   return (
     <div className="space-y-5">
@@ -169,12 +192,58 @@ export default function ParamsForm({ inputs, onChange }: Props) {
         <InputField label="Pé-direito" value={inputs.peDireito_m} onChange={(v) => set('peDireito_m', v)} suffix="m" step={0.1} />
       </Section>
 
-      <Section title="🏠 Áreas e Cômodos">
-        <InputField label="Áreas molhadas" value={inputs.areaMolhadas_m2} onChange={(v) => set('areaMolhadas_m2', v)} suffix="m²" />
-        <InputField label="Varanda" value={inputs.areaVaranda_m2} onChange={(v) => set('areaVaranda_m2', v)} suffix="m²" />
-        <InputField label="Calçada" value={inputs.areaCalcada_m2} onChange={(v) => set('areaCalcada_m2', v)} suffix="m²" />
-        <InputField label="Banheiros" value={inputs.numBanheiros} onChange={(v) => set('numBanheiros', v)} min={1} step={1} />
-        <InputField label="Quartos" value={inputs.numQuartos} onChange={(v) => set('numQuartos', v)} min={1} step={1} />
+      <Section title="🏠 Tipo de Casa">
+        <SelectField label="Tipologia" value={tipoCasa} onChange={(v) => set('tipoCasa', v as any)} fullSpan
+          options={[
+            { value: 'TERREA', label: 'Térrea' },
+            { value: 'TERREA_SUBSOLO', label: 'Térrea + Subsolo' },
+            { value: 'TERREA_SUBSOLO_1PAV', label: 'Térrea + Subsolo + 1 Pav.' },
+          ]}
+        />
+        {temSubsolo && (
+          <>
+            <InputField label="Área subsolo (0=auto)" value={inputs.areaSubsolo_m2 || 0} onChange={(v) => set('areaSubsolo_m2', v)} suffix="m²" />
+            <InputField label="Altura subsolo" value={inputs.alturaSubsolo_m || 2.6} onChange={(v) => set('alturaSubsolo_m', v)} suffix="m" step={0.1} />
+            <CheckboxField label="Subsolo acabado (pisos/pintura)" checked={inputs.subsoloAcabado !== false} onChange={(v) => set('subsoloAcabado', v)} />
+          </>
+        )}
+        {temPavSup && (
+          <InputField label="Área pav. superior (0=auto)" value={inputs.areaPavSuperior_m2 || 0} onChange={(v) => set('areaPavSuperior_m2', v)} suffix="m²" />
+        )}
+        {tipoCasa !== 'TERREA' && (
+          <>
+            <InputField label="Terreo (calc.)" value={derived.areaTerreo_m2.toFixed(1)} onChange={() => {}} suffix="m²" readOnly />
+            {temSubsolo && <InputField label="Subsolo (eff)" value={derived.areaSubsolo_m2_eff.toFixed(1)} onChange={() => {}} suffix="m²" readOnly />}
+            {temPavSup && <InputField label="Pav.Sup (eff)" value={derived.areaPavSuperior_m2_eff.toFixed(1)} onChange={() => {}} suffix="m²" readOnly />}
+          </>
+        )}
+        <InputField label={`Escadas (0=auto=${escadasAuto})`} value={inputs.qtdEscadas || 0} onChange={(v) => set('qtdEscadas', v)} min={0} step={1} />
+      </Section>
+
+      <Section title="🛏️ Cômodos e Áreas">
+        <div className="col-span-2">
+          <div className="grid grid-cols-[1fr_50px_70px] gap-1 text-[10px] text-muted-foreground font-medium mb-1">
+            <span>Cômodo</span><span className="text-center">Qtd</span><span className="text-center">Área (m²)</span>
+          </div>
+          {COMODO_KEYS.map(key => (
+            <div key={key} className="grid grid-cols-[1fr_50px_70px] gap-1 items-center mb-0.5">
+              <span className="text-xs text-foreground">{COMODO_LABELS[key]}</span>
+              <input type="number" min={0} step={1} value={comodos[key].qtd}
+                onChange={(e) => setComodo(key, 'qtd', parseInt(e.target.value) || 0)}
+                className="w-full rounded border border-input bg-card px-1.5 py-1 text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-ring"
+              />
+              <input type="number" min={0} step={1} value={comodos[key].areaTotal_m2}
+                onChange={(e) => setComodo(key, 'areaTotal_m2', parseFloat(e.target.value) || 0)}
+                className="w-full rounded border border-input bg-card px-1.5 py-1 text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-ring"
+              />
+            </div>
+          ))}
+          <div className="mt-1 flex items-center gap-2 text-[10px]">
+            <span className="text-muted-foreground">Soma: <strong className="text-foreground">{somaComodos.toFixed(1)} m²</strong></span>
+            <span className="text-muted-foreground">vs Área: <strong className="text-foreground">{derived.areaConstruida.toFixed(1)} m²</strong></span>
+            {diffPct > 15 && <span className="text-destructive font-medium">⚠ Diferença {diffPct.toFixed(0)}%</span>}
+          </div>
+        </div>
       </Section>
 
       <Section title="🏗️ Especificações">
@@ -200,18 +269,41 @@ export default function ParamsForm({ inputs, onChange }: Props) {
         <InputField label="Portas internas" value={inputs.percPortasInternas_pct} onChange={(v) => set('percPortasInternas_pct', v)} suffix="%" step={1} />
         <InputField label="Altura revest. parede" value={inputs.alturaRevestParede_m} onChange={(v) => set('alturaRevestParede_m', v)} suffix="m" step={0.1} />
         <InputField label="Override revest. (0=auto)" value={inputs.areaRevestParedeOverride_m2} onChange={(v) => set('areaRevestParedeOverride_m2', v)} suffix="m²" />
+        <InputField label="Revest. parede (calc.)" value={derived.areaRevestParedeMolhada_m2.toFixed(1)} onChange={() => {}} suffix="m²" readOnly />
         <CheckboxField label="Teto exclui varanda" checked={inputs.areaTetoExcluiVaranda} onChange={(v) => set('areaTetoExcluiVaranda', v)} />
       </Section>
 
       <Section title="🔧 Avançado">
-        <InputField label="PD duplo – área" value={inputs.pedireitoDuplo_area_m2} onChange={(v) => set('pedireitoDuplo_area_m2', v)} suffix="m²" />
-        <InputField label="PD duplo – altura" value={inputs.pedireitoDuplo_altura_m} onChange={(v) => set('pedireitoDuplo_altura_m', v)} suffix="m" step={0.1} />
+        <SelectField label="PD duplo – local" value={pdLocal} onChange={(v) => set('peDireitoDuploLocal', v as any)} fullSpan
+          options={[
+            { value: 'NENHUM', label: 'Nenhum' },
+            { value: 'SALA', label: 'Sala' },
+            { value: 'COZINHA', label: 'Cozinha' },
+            { value: 'SALA_E_COZINHA', label: 'Sala e Cozinha' },
+          ]}
+        />
+        {pdLocal !== 'NENHUM' && (
+          <>
+            <InputField label="Altura PD duplo" value={inputs.alturaPeDireitoDuplo_m || 0} onChange={(v) => set('alturaPeDireitoDuplo_m', v)} suffix="m" step={0.1} />
+            <InputField label="Área PD (0=auto)" value={inputs.areaPeDireitoDuplo_m2 || 0} onChange={(v) => set('areaPeDireitoDuplo_m2', v)} suffix="m²" />
+            <InputField label="Área PD (calc.)" value={derived.areaExtraParedesPDduplo.toFixed(1)} onChange={() => {}} suffix="m² extra" readOnly fullSpan />
+          </>
+        )}
         <SelectField label="Pintura externa" value={inputs.tipoPinturaExterna} onChange={(v) => set('tipoPinturaExterna', v as any)} fullSpan
           options={[
             { value: 'ACRILICA', label: 'Acrílica' },
             { value: 'TEXTURA', label: 'Textura' },
           ]}
         />
+      </Section>
+
+      <Section title="📊 Áreas Calculadas">
+        <InputField label="Calçada" value={inputs.areaCalcada_m2} onChange={(v) => set('areaCalcada_m2', v)} suffix="m²" />
+        <InputField label="Á. molhadas (calc.)" value={derived.areaMolhadas.toFixed(1)} onChange={() => {}} suffix="m²" readOnly />
+        <InputField label="Á. seca (calc.)" value={derived.areaSeca.toFixed(1)} onChange={() => {}} suffix="m²" readOnly />
+        <InputField label="Á. varanda (calc.)" value={derived.areaVaranda.toFixed(1)} onChange={() => {}} suffix="m²" readOnly />
+        <InputField label="Pontos elétricos" value={derived.pontosEletricos} onChange={() => {}} readOnly />
+        <InputField label="Pontos hidráulicos" value={derived.pontosHidraulicos} onChange={() => {}} readOnly />
       </Section>
 
       <Section title="💰 BDI">
@@ -234,6 +326,7 @@ export default function ParamsForm({ inputs, onChange }: Props) {
         <InputField label="Aço" value={inputs.perdas.aco_pct} onChange={(v) => setPerdas('aco_pct', v)} suffix="%" />
         <InputField label="Blocos" value={inputs.perdas.blocos_pct} onChange={(v) => setPerdas('blocos_pct', v)} suffix="%" />
         <InputField label="Telha" value={inputs.perdas.telha_pct} onChange={(v) => setPerdas('telha_pct', v)} suffix="%" />
+        <InputField label="Impermeab." value={inputs.perdas.impermeab_pct} onChange={(v) => setPerdas('impermeab_pct', v)} suffix="%" />
       </Section>
 
       <Section title="🧱 Muro">
@@ -242,10 +335,7 @@ export default function ParamsForm({ inputs, onChange }: Props) {
         <InputField label="Lado Dir." value={inputs.muro.ladoDir} onChange={(v) => setMuro('ladoDir', v)} suffix="m" />
         <InputField label="Lado Esq." value={inputs.muro.ladoEsq} onChange={(v) => setMuro('ladoEsq', v)} suffix="m" />
         <InputField label="Altura" value={inputs.muro.altura} onChange={(v) => setMuro('altura', v)} suffix="m" step={0.1} />
-        <MuroAcabamentoGrid
-          acabamentos={acabamentos}
-          onChange={(a) => setMuro('acabamentos', a)}
-        />
+        <MuroAcabamentoGrid acabamentos={acabamentos} onChange={(a) => setMuro('acabamentos', a)} />
         <CheckboxField label="Portão garagem" checked={inputs.muro.portaoGaragem} onChange={(v) => setMuro('portaoGaragem', v)} />
         <CheckboxField label="Portão pedestre" checked={inputs.muro.portaoPedestre} onChange={(v) => setMuro('portaoPedestre', v)} />
       </Section>

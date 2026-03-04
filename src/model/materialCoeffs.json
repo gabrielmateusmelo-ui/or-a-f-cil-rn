@@ -98,6 +98,15 @@
   "forro_pvc": [
     { "materialId": "forro_pvc_material", "descricao": "Forro PVC liso 200mm", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "outros" }
   ],
+  "escada_pacote": [
+    { "materialId": "concreto_escada", "descricao": "Concreto para escada", "unidade": "m³", "coef_por_unidade_servico": 0.8, "categoria": "concreto" },
+    { "materialId": "aco_escada", "descricao": "Aço para escada", "unidade": "kg", "coef_por_unidade_servico": 60, "categoria": "aco" },
+    { "materialId": "revestimento_escada", "descricao": "Revestimento de escada", "unidade": "m²", "coef_por_unidade_servico": 8, "categoria": "ceramica" }
+  ],
+  "subsolo_imperm": [
+    { "materialId": "manta_asfaltica_subsolo", "descricao": "Manta asfáltica 4mm (subsolo)", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "impermeabilizacao" },
+    { "materialId": "primer_subsolo", "descricao": "Primer asfáltico", "unidade": "L", "coef_por_unidade_servico": 0.3, "categoria": "impermeabilizacao" }
+  ],
   "muro_alvenaria": [
     { "materialId": "bloco_14cm", "descricao": "Bloco cerâmico 14x19x39", "unidade": "un", "coef_por_unidade_servico": 25, "categoria": "alvenaria" },
     { "materialId": "arg_assent_muro", "descricao": "Argamassa de assentamento", "unidade": "kg", "coef_por_unidade_servico": 18, "categoria": "argamassa" }

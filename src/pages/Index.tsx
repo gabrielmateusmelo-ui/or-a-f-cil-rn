@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
-import { ProjectInputs, derive } from '@/lib/derive';
+import { ProjectInputs, derive, safeComodos } from '@/lib/derive';
 import { calcBudget } from '@/lib/calcBudget';
 import { calcMaterials } from '@/lib/calcMaterials';
 import { calcLabor } from '@/lib/calcLabor';
-import defaultInputs from '@/model/defaultInputs.json';
+import defaultInputsRaw from '@/model/defaultInputs.json';
 import ParamsForm from '@/components/ParamsForm';
 import KPICards from '@/components/KPICards';
 import ServicesTable from '@/components/ServicesTable';
@@ -13,8 +13,32 @@ import DebugPanel from '@/components/DebugPanel';
 
 type Tab = 'com' | 'sem' | 'materiais' | 'equipe';
 
+function deepMerge(target: any, source: any): any {
+  if (!source || typeof source !== 'object') return target;
+  if (!target || typeof target !== 'object') return source;
+  const result = { ...target };
+  for (const key of Object.keys(target)) {
+    if (key in source) {
+      if (typeof target[key] === 'object' && target[key] !== null && !Array.isArray(target[key])) {
+        result[key] = deepMerge(target[key], source[key]);
+      } else {
+        result[key] = source[key];
+      }
+    }
+  }
+  // Also include keys from source not in target
+  for (const key of Object.keys(source)) {
+    if (!(key in target)) {
+      result[key] = source[key];
+    }
+  }
+  return result;
+}
+
 const Index = () => {
-  const [inputs, setInputs] = useState<ProjectInputs>(defaultInputs as ProjectInputs);
+  const [inputs, setInputs] = useState<ProjectInputs>(() => {
+    return deepMerge(defaultInputsRaw, {}) as ProjectInputs;
+  });
   const [activeTab, setActiveTab] = useState<Tab>('com');
   const [hideZero, setHideZero] = useState(true);
   const [search, setSearch] = useState('');
@@ -24,16 +48,8 @@ const Index = () => {
   const materials = useMemo(() => calcMaterials(result.items, inputs), [result.items, inputs]);
   const labor = useMemo(() => calcLabor(result.items), [result.items]);
 
-  const exportJSON = () => {
-    const data = { inputs, derived, result, materials, labor, exportedAt: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `orcamento_RN_${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const tipoCasaLabel = inputs.tipoCasa === 'TERREA_SUBSOLO_1PAV' ? 'Térrea + Subsolo + 1 Pav.'
+    : inputs.tipoCasa === 'TERREA_SUBSOLO' ? 'Térrea + Subsolo' : 'Casa térrea';
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'com', label: 'Serviços c/ Material' },
@@ -48,14 +64,8 @@ const Index = () => {
         <div className="container mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">Simulador de Orçamentos – RN</h1>
-            <p className="text-xs opacity-75">Casa térrea · Região: Rio Grande do Norte</p>
+            <p className="text-xs opacity-75">{tipoCasaLabel} · Região: Rio Grande do Norte</p>
           </div>
-          <button
-            onClick={exportJSON}
-            className="rounded-md bg-secondary text-secondary-foreground px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            📥 Exportar JSON
-          </button>
         </div>
       </header>
 
@@ -90,19 +100,10 @@ const Index = () => {
               {(activeTab === 'com' || activeTab === 'sem') && (
                 <>
                   <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={hideZero}
-                      onChange={(e) => setHideZero(e.target.checked)}
-                      className="rounded border-input"
-                    />
+                    <input type="checkbox" checked={hideZero} onChange={(e) => setHideZero(e.target.checked)} className="rounded border-input" />
                     Ocultar zerados
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Buscar..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                  <input type="text" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)}
                     className="ml-auto rounded-md border border-input bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring w-48"
                   />
                 </>
