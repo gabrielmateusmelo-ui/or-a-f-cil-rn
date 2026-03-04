@@ -47,6 +47,25 @@ export interface PiscinaInputs {
   casaMaquinas: boolean;
 }
 
+export interface ComodoEntry {
+  qtd: number;
+  areaTotal_m2: number;
+}
+
+export interface Comodos {
+  quartos: ComodoEntry;
+  banheiros: ComodoEntry;
+  lavabos: ComodoEntry;
+  cozinha: ComodoEntry;
+  sala: ComodoEntry;
+  jantar: ComodoEntry;
+  servico: ComodoEntry;
+  circulacao: ComodoEntry;
+  varanda: ComodoEntry;
+  garagem: ComodoEntry;
+  gourmet: ComodoEntry;
+}
+
 export interface ProjectInputs {
   areaConstruida_m2: number;
   largura_m: number;
@@ -79,6 +98,16 @@ export interface ProjectInputs {
   areaTetoExcluiVaranda: boolean;
   dimensoesModo: 'AREA' | 'LxC';
   proporcaoLC: number;
+  tipoCasa: 'TERREA' | 'TERREA_SUBSOLO' | 'TERREA_SUBSOLO_1PAV';
+  areaSubsolo_m2: number;
+  areaPavSuperior_m2: number;
+  alturaSubsolo_m: number;
+  subsoloAcabado: boolean;
+  comodos: Comodos;
+  peDireitoDuploLocal: 'NENHUM' | 'SALA' | 'COZINHA' | 'SALA_E_COZINHA';
+  alturaPeDireitoDuplo_m: number;
+  areaPeDireitoDuplo_m2: number;
+  qtdEscadas: number;
   muro: MuroInputs;
   piscina: PiscinaInputs;
   pedireitoDuplo_area_m2: number;
@@ -105,6 +134,7 @@ export interface DerivedVars {
   areaCalcada: number;
   areaMolhadas: number;
   areaRevestimentoCeramicoParede: number;
+  areaRevestParedeMolhada_m2: number;
   peDireito: number;
   numBanheiros: number;
   numQuartos: number;
@@ -136,7 +166,38 @@ export interface DerivedVars {
   areaRevestimentoCeramico: number;
   fatorFaceReboco: number;
   fatorFacePintura: number;
+  // Pavimentos
+  areaTerreo_m2: number;
+  areaSubsolo_m2_eff: number;
+  areaPavSuperior_m2_eff: number;
+  areaImplantacao_m2: number;
+  areaCoberturaBase_m2: number;
+  temSubsolo: number;
+  temPavSuperior: number;
+  subsoloAcabado: number;
+  alturaSubsolo_m: number;
+  // Escadas
+  qtdEscadasEfetiva: number;
+  // Instalações por pontos
+  pontosEletricos: number;
+  pontosHidraulicos: number;
+  // Soma cômodos
+  somaAreasComodos: number;
   [key: string]: number;
+}
+
+const defaultComodoEntry = (): ComodoEntry => ({ qtd: 0, areaTotal_m2: 0 });
+
+export function safeComodos(c: any): Comodos {
+  const keys = ['quartos','banheiros','lavabos','cozinha','sala','jantar','servico','circulacao','varanda','garagem','gourmet'] as const;
+  const result: any = {};
+  for (const k of keys) {
+    result[k] = {
+      qtd: c?.[k]?.qtd ?? 0,
+      areaTotal_m2: c?.[k]?.areaTotal_m2 ?? 0,
+    };
+  }
+  return result as Comodos;
 }
 
 function safeMuroAcabamentos(m: any): MuroAcabamentos {
@@ -170,6 +231,7 @@ function calcMuroAcabArea(
 }
 
 export function derive(inputs: ProjectInputs): DerivedVars {
+  // === Dimensões base ===
   let areaConstruida: number;
   let largura: number;
   let comprimento: number;
@@ -185,6 +247,62 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     comprimento = largura > 0 ? areaConstruida / largura : 0;
   }
 
+  // === Tipo de casa / pavimentos ===
+  const tipoCasa = inputs.tipoCasa || 'TERREA';
+  const temSubsoloFlag = tipoCasa === 'TERREA_SUBSOLO' || tipoCasa === 'TERREA_SUBSOLO_1PAV';
+  const temPavSupFlag = tipoCasa === 'TERREA_SUBSOLO_1PAV';
+
+  let areaSubsolo_m2_eff = 0;
+  let areaPavSuperior_m2_eff = 0;
+  let areaTerreo_m2 = areaConstruida;
+
+  if (temSubsoloFlag) {
+    areaSubsolo_m2_eff = (inputs.areaSubsolo_m2 || 0) > 0
+      ? inputs.areaSubsolo_m2
+      : (temPavSupFlag ? areaConstruida / 3 : areaConstruida / 2);
+  }
+  if (temPavSupFlag) {
+    areaPavSuperior_m2_eff = (inputs.areaPavSuperior_m2 || 0) > 0
+      ? inputs.areaPavSuperior_m2
+      : areaConstruida / 3;
+  }
+
+  areaTerreo_m2 = areaConstruida - areaSubsolo_m2_eff - areaPavSuperior_m2_eff;
+  // Clamp: normalize proportionally if negative
+  if (areaTerreo_m2 < 0) {
+    const totalParts = areaSubsolo_m2_eff + areaPavSuperior_m2_eff;
+    if (totalParts > 0) {
+      areaSubsolo_m2_eff = areaConstruida * (areaSubsolo_m2_eff / totalParts);
+      areaPavSuperior_m2_eff = areaConstruida * (areaPavSuperior_m2_eff / totalParts);
+    }
+    areaTerreo_m2 = 0;
+  }
+
+  const areaImplantacao_m2 = Math.max(areaTerreo_m2, areaSubsolo_m2_eff);
+  const areaCoberturaBase_m2 = temPavSupFlag ? areaPavSuperior_m2_eff : areaTerreo_m2;
+  const alturaSubsolo_m = inputs.alturaSubsolo_m || 2.6;
+  const subsoloAcabadoFlag = inputs.subsoloAcabado !== false;
+
+  // === Escadas ===
+  let qtdEscadasAuto = 0;
+  if (tipoCasa === 'TERREA_SUBSOLO') qtdEscadasAuto = 1;
+  if (tipoCasa === 'TERREA_SUBSOLO_1PAV') qtdEscadasAuto = 2;
+  const qtdEscadasEfetiva = (inputs.qtdEscadas || 0) > 0 ? inputs.qtdEscadas : qtdEscadasAuto;
+
+  // === Cômodos ===
+  const comodos = safeComodos(inputs.comodos);
+  const somaAreasComodos = Object.values(comodos).reduce((s, c) => s + (c.areaTotal_m2 || 0), 0);
+
+  // Áreas derivadas de cômodos
+  const areaVaranda = comodos.varanda.areaTotal_m2 > 0 ? comodos.varanda.areaTotal_m2 : (inputs.areaVaranda_m2 || 0);
+  const areaMolhadas = comodos.banheiros.areaTotal_m2 + comodos.lavabos.areaTotal_m2
+    + comodos.cozinha.areaTotal_m2 + comodos.servico.areaTotal_m2
+    + (comodos.gourmet.areaTotal_m2 * 0.3);
+
+  // Use comodos-derived if sum > 0, else fallback to legacy inputs
+  const areaMolhadasEff = areaMolhadas > 0 ? areaMolhadas : (inputs.areaMolhadas_m2 || 0);
+  const areaVarandaEff = areaVaranda;
+
   const perimetroExterno = 2 * (largura + comprimento);
   const perimetroInterno = perimetroExterno * inputs.fatorParedesInternas;
   const perimetroTotal = perimetroExterno + perimetroInterno;
@@ -194,29 +312,68 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const areaParedeInterna1Face = perimetroInterno * inputs.peDireito_m;
   const areaParedeInterna2Faces = areaParedeInterna1Face * 2 * (1 - inputs.percPortasInternas_pct / 100);
 
-  const areaVaranda = inputs.areaVaranda_m2;
-  const areaMolhadas = inputs.areaMolhadas_m2;
-  const areaInterna = Math.max(0, areaConstruida - areaVaranda);
-  const areaSeca = Math.max(0, areaInterna - areaMolhadas);
-  const areaTeto = Math.max(0, areaConstruida - (inputs.areaTetoExcluiVaranda ? areaVaranda : 0));
+  const areaInterna = Math.max(0, areaConstruida - areaVarandaEff);
+  const areaSeca = Math.max(0, areaInterna - areaMolhadasEff);
+  const areaTeto = Math.max(0, areaConstruida - (inputs.areaTetoExcluiVaranda ? areaVarandaEff : 0));
 
-  const areaExtraParedesPDduplo = inputs.pedireitoDuplo_area_m2 * Math.max(0, inputs.pedireitoDuplo_altura_m - inputs.peDireito_m);
+  // === Revestimento de parede molhada (rastreável) ===
+  const altRevParede = inputs.alturaRevestParede_m || 1.5;
+  let areaRevestParedeMolhada_m2 = 0;
+  const tiposMolhados = [comodos.banheiros, comodos.lavabos, comodos.cozinha, comodos.servico] as const;
+  for (const cm of tiposMolhados) {
+    if (cm.qtd > 0 && cm.areaTotal_m2 > 0) {
+      const areaMed = cm.areaTotal_m2 / cm.qtd;
+      const perimAprox = 4 * Math.sqrt(areaMed);
+      areaRevestParedeMolhada_m2 += perimAprox * altRevParede * cm.qtd;
+    }
+  }
+  areaRevestParedeMolhada_m2 *= 0.9; // fator portas/vãos
 
+  // Legacy override
   let areaRevestimentoCeramicoParede: number;
   if (inputs.areaRevestParedeOverride_m2 > 0) {
     areaRevestimentoCeramicoParede = inputs.areaRevestParedeOverride_m2;
+  } else if (areaRevestParedeMolhada_m2 > 0) {
+    areaRevestimentoCeramicoParede = areaRevestParedeMolhada_m2;
   } else {
-    const areaRevest = (inputs.numBanheiros * 12) + (Math.max(0, areaMolhadas - inputs.numBanheiros * 4) * 0.9);
-    areaRevestimentoCeramicoParede = areaRevest * (inputs.alturaRevestParede_m / 1.5);
+    // Legacy fallback
+    const numBanh = inputs.numBanheiros || 0;
+    const areaRevest = (numBanh * 12) + (Math.max(0, areaMolhadasEff - numBanh * 4) * 0.9);
+    areaRevestimentoCeramicoParede = areaRevest * (altRevParede / 1.5);
   }
 
+  // === Pé-direito duplo ===
+  const pdLocal = inputs.peDireitoDuploLocal || 'NENHUM';
+  let areaPDduplo = inputs.areaPeDireitoDuplo_m2 || 0;
+  if (areaPDduplo === 0 && pdLocal !== 'NENHUM') {
+    if (pdLocal === 'SALA') areaPDduplo = comodos.sala.areaTotal_m2 + comodos.jantar.areaTotal_m2;
+    else if (pdLocal === 'COZINHA') areaPDduplo = comodos.cozinha.areaTotal_m2;
+    else if (pdLocal === 'SALA_E_COZINHA') areaPDduplo = comodos.sala.areaTotal_m2 + comodos.jantar.areaTotal_m2 + comodos.cozinha.areaTotal_m2;
+  }
+  const alturaPD = inputs.alturaPeDireitoDuplo_m || 0;
+  const deltaH = Math.max(0, alturaPD - inputs.peDireito_m);
+  const perimPD = areaPDduplo > 0 ? 4 * Math.sqrt(areaPDduplo) : 0;
+  const areaExtraParedesPDduplo = perimPD * deltaH;
+
+  // === Cobertura ===
   const fatorTelhado = inputs.tipoCobertura === 'laje impermeabilizada' ? 1.0 : 1.15;
-  const areaTelhado = areaConstruida * fatorTelhado;
+  const areaTelhado = areaCoberturaBase_m2 * fatorTelhado;
 
   const isFibro = inputs.tipoCobertura === 'fibrocimento' ? 1 : 0;
   const isCeram = inputs.tipoCobertura === 'cerâmica' ? 1 : 0;
   const isLaje = inputs.tipoCobertura === 'laje impermeabilizada' ? 1 : 0;
 
+  // === Instalações por pontos ===
+  const pontosEletricos = Math.round(
+    areaConstruida * 0.25 + comodos.quartos.qtd * 6 + comodos.banheiros.qtd * 4
+    + comodos.cozinha.qtd * 8 + comodos.gourmet.qtd * 4
+  );
+  const pontosHidraulicos = Math.round(
+    comodos.banheiros.qtd * 8 + comodos.lavabos.qtd * 4
+    + comodos.cozinha.qtd * 6 + comodos.servico.qtd * 4 + 4
+  );
+
+  // === Muro ===
   const m = inputs.muro || {} as any;
   const frente = m.frente || 0;
   const fundos = m.fundos || 0;
@@ -231,7 +388,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const areaMuro = perimetroMuro * altMuro;
 
   const acabamentos = safeMuroAcabamentos(m.acabamentos);
-
   const areaMuroChapisco_m2 = calcMuroAcabArea(acabamentos.chapisco, areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face);
   const areaMuroReboco_m2 = calcMuroAcabArea(acabamentos.reboco, areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face);
   const areaMuroPintura_m2 = calcMuroAcabArea(acabamentos.pintura, areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face);
@@ -239,6 +395,7 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const portaoGaragem = m.portaoGaragem ? 1 : 0;
   const portaoPedestre = m.portaoPedestre ? 1 : 0;
 
+  // === Piscina ===
   const p = inputs.piscina || {} as any;
   const areaPiscina = (p.largura || 0) * (p.comprimento || 0);
   const perimetroPiscina = 2 * ((p.largura || 0) + (p.comprimento || 0));
@@ -250,17 +407,22 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const isPinturaAcrilica = inputs.tipoPinturaExterna === 'ACRILICA' ? 1 : 0;
   const isPinturaTextura = inputs.tipoPinturaExterna === 'TEXTURA' ? 1 : 0;
 
+  const numBanheiros = comodos.banheiros.qtd > 0 ? comodos.banheiros.qtd + comodos.lavabos.qtd : inputs.numBanheiros;
+  const numQuartos = comodos.quartos.qtd > 0 ? comodos.quartos.qtd : inputs.numQuartos;
+
   return {
     comprimento, largura,
     perimetroExterno, perimetroInterno, perimetroTotal,
     areaParedeExternaBruta, areaParedeExternaLiquida,
     areaParedeInterna1Face, areaParedeInterna2Faces,
     areaTelhado, areaTeto, areaConstruida,
-    areaInterna, areaSeca, areaVaranda,
+    areaInterna, areaSeca, areaVaranda: areaVarandaEff,
     areaCalcada: inputs.areaCalcada_m2,
-    areaMolhadas, areaRevestimentoCeramicoParede,
+    areaMolhadas: areaMolhadasEff,
+    areaRevestimentoCeramicoParede,
+    areaRevestParedeMolhada_m2,
     peDireito: inputs.peDireito_m,
-    numBanheiros: inputs.numBanheiros, numQuartos: inputs.numQuartos,
+    numBanheiros, numQuartos,
     isFibro, isCeram, isLaje,
     perimetroMuro, areaMuro,
     areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face,
@@ -274,5 +436,18 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     areaParede: areaParedeExternaLiquida,
     areaParedeInterna: areaParedeInterna2Faces,
     areaRevestimentoCeramico: areaRevestimentoCeramicoParede,
+    // Pavimentos
+    areaTerreo_m2,
+    areaSubsolo_m2_eff,
+    areaPavSuperior_m2_eff,
+    areaImplantacao_m2,
+    areaCoberturaBase_m2,
+    temSubsolo: temSubsoloFlag ? 1 : 0,
+    temPavSuperior: temPavSupFlag ? 1 : 0,
+    subsoloAcabado: subsoloAcabadoFlag ? 1 : 0,
+    alturaSubsolo_m,
+    qtdEscadasEfetiva,
+    pontosEletricos, pontosHidraulicos,
+    somaAreasComodos,
   };
 }

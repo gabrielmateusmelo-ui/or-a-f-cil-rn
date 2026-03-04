@@ -5,7 +5,7 @@
     "codigo": "SP-01",
     "descricao": "Limpeza do terreno",
     "unidade": "m²",
-    "qtd_expr": "areaConstruida * 1.3",
+    "qtd_expr": "areaImplantacao_m2 * 1.3",
     "inclui_material": false,
     "inclui_mo": true
   },
@@ -15,7 +15,7 @@
     "codigo": "SP-02",
     "descricao": "Locação da obra",
     "unidade": "m²",
-    "qtd_expr": "areaConstruida",
+    "qtd_expr": "areaImplantacao_m2",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -205,7 +205,7 @@
     "codigo": "RV-05",
     "descricao": "Revestimento cerâmico em paredes (áreas molhadas)",
     "unidade": "m²",
-    "qtd_expr": "areaRevestimentoCeramicoParede",
+    "qtd_expr": "areaRevestParedeMolhada_m2",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -260,12 +260,32 @@
     "inclui_mo": true
   },
   {
+    "id": "instalacao_eletrica",
+    "grupo": "Instalações Elétricas",
+    "codigo": "IE-01",
+    "descricao": "Instalações elétricas (pontos)",
+    "unidade": "pt",
+    "qtd_expr": "pontosEletricos",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "quadro_distribuicao",
+    "grupo": "Instalações Elétricas",
+    "codigo": "IE-02",
+    "descricao": "Quadro de distribuição",
+    "unidade": "un",
+    "qtd_expr": "1",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
     "id": "instalacao_hidraulica",
     "grupo": "Instalações Hidráulicas",
     "codigo": "IH-01",
     "descricao": "Instalações hidráulicas (água fria)",
     "unidade": "pt",
-    "qtd_expr": "numBanheiros * 5 + 4",
+    "qtd_expr": "pontosHidraulicos",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -284,26 +304,6 @@
     "grupo": "Instalações Hidráulicas",
     "codigo": "IH-03",
     "descricao": "Fossa séptica e sumidouro",
-    "unidade": "un",
-    "qtd_expr": "1",
-    "inclui_material": true,
-    "inclui_mo": true
-  },
-  {
-    "id": "instalacao_eletrica",
-    "grupo": "Instalações Elétricas",
-    "codigo": "IE-01",
-    "descricao": "Instalações elétricas (pontos)",
-    "unidade": "pt",
-    "qtd_expr": "numQuartos * 5 + numBanheiros * 3 + 15",
-    "inclui_material": true,
-    "inclui_mo": true
-  },
-  {
-    "id": "quadro_distribuicao",
-    "grupo": "Instalações Elétricas",
-    "codigo": "IE-02",
-    "descricao": "Quadro de distribuição",
     "unidade": "un",
     "qtd_expr": "1",
     "inclui_material": true,
@@ -396,6 +396,36 @@
     "descricao": "Tanque de lavar roupa",
     "unidade": "un",
     "qtd_expr": "1",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "escada_pacote",
+    "grupo": "Escadas",
+    "codigo": "EC-01",
+    "descricao": "Escada (pacote estrutura + acabamento)",
+    "unidade": "un",
+    "qtd_expr": "qtdEscadasEfetiva",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "subsolo_escavacao",
+    "grupo": "Subsolo",
+    "codigo": "SB-01",
+    "descricao": "Escavação para subsolo",
+    "unidade": "m³",
+    "qtd_expr": "areaSubsolo_m2_eff * alturaSubsolo_m * 1.10 * temSubsolo",
+    "inclui_material": false,
+    "inclui_mo": true
+  },
+  {
+    "id": "subsolo_imperm",
+    "grupo": "Subsolo",
+    "codigo": "SB-02",
+    "descricao": "Impermeabilização paredes subsolo",
+    "unidade": "m²",
+    "qtd_expr": "(4 * sqrt(areaSubsolo_m2_eff)) * alturaSubsolo_m * 0.7 * temSubsolo",
     "inclui_material": true,
     "inclui_mo": true
   },
