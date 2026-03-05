@@ -1,0 +1,33 @@
+{
+  "meta": { "uf": "RN", "competencia": "2024-12", "desonerado": false },
+  "insumos": {
+    "REVEST_M2": { "label": "Revestimento/Porcelanato (R$/m²)", "unit": "m2", "value": 120 },
+    "CER_EXT_M2": { "label": "Cerâmica externa (R$/m²)", "unit": "m2", "value": 95 },
+    "CIMENTO_KG": { "label": "Cimento (R$/kg)", "unit": "kg", "value": 0.85 },
+    "BLOCO_UN": { "label": "Bloco/Tijolo (R$/un)", "unit": "un", "value": 2.10 },
+    "ARG_COLANTE_KG": { "label": "Argamassa colante (R$/kg)", "unit": "kg", "value": 2.60 },
+    "ARG_REBOCO_KG": { "label": "Argamassa reboco (R$/kg)", "unit": "kg", "value": 0.75 },
+    "TINTA_L": { "label": "Tinta (R$/L)", "unit": "L", "value": 18 },
+    "SELADOR_L": { "label": "Selador (R$/L)", "unit": "L", "value": 10 },
+    "ACO_KG": { "label": "Aço CA-50 (R$/kg)", "unit": "kg", "value": 7.50 },
+    "AREIA_M3": { "label": "Areia (R$/m³)", "unit": "m3", "value": 85 },
+    "BRITA_M3": { "label": "Brita (R$/m³)", "unit": "m3", "value": 95 },
+    "CAL_KG": { "label": "Cal hidratada (R$/kg)", "unit": "kg", "value": 0.65 },
+    "MANTA_M2": { "label": "Manta asfáltica (R$/m²)", "unit": "m2", "value": 45 },
+    "MADEIRA_M2": { "label": "Madeiramento (R$/m²)", "unit": "m2", "value": 55 },
+    "TELHA_M2": { "label": "Telha (R$/m²)", "unit": "m2", "value": 38 },
+    "PVC_FORRO_M2": { "label": "Forro PVC (R$/m²)", "unit": "m2", "value": 30 },
+    "TUBO_PVC_M": { "label": "Tubo PVC (R$/m)", "unit": "m", "value": 8.50 },
+    "CABO_M": { "label": "Cabo elétrico (R$/m)", "unit": "m", "value": 3.20 }
+  },
+  "maoObraHH": {
+    "pedreiro": { "label": "Pedreiro (R$/h)", "unit": "h", "value": 28 },
+    "servente": { "label": "Ajudante/Servente (R$/h)", "unit": "h", "value": 18 },
+    "armador": { "label": "Armador (R$/h)", "unit": "h", "value": 30 },
+    "carpinteiro": { "label": "Carpinteiro (R$/h)", "unit": "h", "value": 30 },
+    "pintor": { "label": "Pintor (R$/h)", "unit": "h", "value": 26 },
+    "azulejista": { "label": "Azulejista (R$/h)", "unit": "h", "value": 28 },
+    "eletricista": { "label": "Eletricista (R$/h)", "unit": "h", "value": 32 },
+    "encanador": { "label": "Encanador (R$/h)", "unit": "h", "value": 32 }
+  }
+}

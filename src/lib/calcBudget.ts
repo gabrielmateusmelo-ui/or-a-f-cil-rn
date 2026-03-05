@@ -1,7 +1,10 @@
 import { safeEval } from './eval';
-import { DerivedVars, ProjectInputs } from './derive';
+import { DerivedVars, ProjectInputs, PrecosInputs } from './derive';
 import itemsData from '@/model/items.json';
 import pricesData from '@/model/prices_RN.json';
+import materialCoeffsData from '@/model/materialCoeffs.json';
+import sinapiBaseline from '@/model/sinapiBaseline_RN_202412.json';
+import laborSplitsData from '@/model/laborSplits.json';
 
 export interface ServiceItem {
   id: string;
@@ -14,6 +17,8 @@ export interface ServiceItem {
   custoMO: number;
   totalComMaterial: number;
   totalSemMaterial: number;
+  materialUnitUsed: number;
+  moUnitUsed: number;
   abcClass?: 'A' | 'B' | 'C';
   abcClassSemMat?: 'A' | 'B' | 'C';
   abcPct?: number;
@@ -50,6 +55,127 @@ export interface BudgetResult {
 }
 
 const prices = pricesData as Record<string, { material_unit: number; mo_unit: number }>;
+const materialCoeffs = materialCoeffsData as Record<string, { materialId: string; coef_por_unidade_servico: number; categoria: string }[]>;
+const laborSplits = laborSplitsData as Record<string, Record<string, number>>;
+
+// Map materialId -> SINAPI insumo key (for price override lookups)
+const materialIdToSinapiKey: Record<string, string> = {
+  // Cimento
+  'cimento': 'CIMENTO_KG',
+  'cimento_pisc': 'CIMENTO_KG',
+  // Blocos
+  'bloco_14cm': 'BLOCO_UN',
+  'bloco_9cm': 'BLOCO_UN',
+  // Argamassa colante
+  'argamassa_colante': 'ARG_COLANTE_KG',
+  'arg_colante_pisc': 'ARG_COLANTE_KG',
+  'arg_colante_ext': 'ARG_COLANTE_KG',
+  // Argamassa reboco
+  'arg_reboco_muro': 'ARG_REBOCO_KG',
+  'arg_reboco_platib': 'ARG_REBOCO_KG',
+  'arg_chapisco_muro': 'ARG_REBOCO_KG',
+  'arg_assent_muro': 'ARG_REBOCO_KG',
+  'cal_hidratada': 'CAL_KG',
+  // Tintas
+  'tinta_pva': 'TINTA_L',
+  'tinta_acrilica': 'TINTA_L',
+  'tinta_muro': 'TINTA_L',
+  'textura_acrilica': 'TINTA_L',
+  'selador_pva': 'SELADOR_L',
+  'selador_acrilico': 'SELADOR_L',
+  'selador_muro': 'SELADOR_L',
+  // Aço
+  'aco_ca50': 'ACO_KG',
+  'aco_escada': 'ACO_KG',
+  'arame_recozido': 'ACO_KG',
+  // Areia
+  'areia_media': 'AREIA_M3',
+  'areia_fina': 'AREIA_M3',
+  'areia_grossa': 'AREIA_M3',
+  'areia_pisc': 'AREIA_M3',
+  // Brita
+  'brita_1': 'BRITA_M3',
+  'brita_pisc': 'BRITA_M3',
+  // Cerâmica/revestimento
+  'ceramica_parede': 'REVEST_M2',
+  'ceramica_piso': 'REVEST_M2',
+  'ceramica_piso_antiderrap': 'REVEST_M2',
+  'ceramica_piso_ext': 'CER_EXT_M2',
+  'rev_pisc': 'REVEST_M2',
+  'piso_ext_m2': 'CER_EXT_M2',
+  // Manta
+  'manta_asfaltica': 'MANTA_M2',
+  'manta_asfaltica_cobertura': 'MANTA_M2',
+  'manta_asfaltica_subsolo': 'MANTA_M2',
+  'manta_imperm_laje': 'MANTA_M2',
+  // Madeira/cobertura
+  'madeiramento': 'MADEIRA_M2',
+  'telha': 'TELHA_M2',
+  // Forro
+  'forro_pvc_material': 'PVC_FORRO_M2',
+  // Instalações
+  'cabo_eletrico': 'CABO_M',
+  'tubo_pvc': 'TUBO_PVC_M',
+};
+
+function getInsumoPrice(materialId: string, precos: PrecosInputs): number | null {
+  const sinapiKey = materialIdToSinapiKey[materialId];
+  if (!sinapiKey) return null;
+  // User override first, then baseline
+  if (precos.insumos[sinapiKey] !== undefined) return precos.insumos[sinapiKey];
+  const baseline = (sinapiBaseline.insumos as any)[sinapiKey];
+  return baseline?.value ?? null;
+}
+
+function calcMaterialUnitFromCoeffs(itemId: string, precos: PrecosInputs): number | null {
+  const coeffs = materialCoeffs[itemId];
+  if (!coeffs || coeffs.length === 0) return null;
+  
+  let total = 0;
+  let allResolved = true;
+  for (const c of coeffs) {
+    const price = getInsumoPrice(c.materialId, precos);
+    if (price === null) {
+      allResolved = false;
+      continue;
+    }
+    total += c.coef_por_unidade_servico * price;
+  }
+  // Return partial sum even if not all resolved (better than nothing)
+  return total;
+}
+
+function getHHCost(funcao: string, precos: PrecosInputs): number {
+  if (precos.maoObraHH[funcao] !== undefined) return precos.maoObraHH[funcao];
+  const baseline = (sinapiBaseline.maoObraHH as any)[funcao];
+  return baseline?.value ?? 0;
+}
+
+function calcMoUnitFromHH(itemId: string, grupo: string, baseMoUnit: number, precos: PrecosInputs): number {
+  // Get the labor split for this group
+  const split = laborSplits[grupo] ?? laborSplits['_default'] ?? { pedreiro: 0.5, servente: 0.5 };
+  
+  // Base HH cost per unit (from laborRoles baseline)
+  let baseHHCostPerUnit = 0;
+  let newHHCostPerUnit = 0;
+  
+  for (const [funcao, pct] of Object.entries(split)) {
+    const baselineEntry = (sinapiBaseline.maoObraHH as any)[funcao];
+    const baseRate = baselineEntry?.value ?? 0;
+    const newRate = getHHCost(funcao, precos);
+    
+    if (baseRate > 0) {
+      // Fraction of cost for this function
+      const costFraction = baseMoUnit * pct;
+      const hh = costFraction / baseRate;
+      baseHHCostPerUnit += costFraction;
+      newHHCostPerUnit += hh * newRate;
+    }
+  }
+  
+  // If we could decompose, return recalculated. Otherwise return base.
+  return baseHHCostPerUnit > 0 ? newHHCostPerUnit : baseMoUnit;
+}
 
 const padraoMultipliers: Record<string, Record<string, number>> = {
   'Baixo': {
@@ -101,6 +227,7 @@ function classifyABC(items: { id: string; total: number }[]): Map<string, { cls:
 export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetResult {
   const bdiPct = calcBdiPct(inputs);
   const errors: { itemId: string; error: string }[] = [];
+  const precos: PrecosInputs = inputs.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
 
   const items: ServiceItem[] = itemsData.map((item) => {
     const evalResult = safeEval(item.qtd_expr, derived as unknown as Record<string, number>);
@@ -114,8 +241,23 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
       errors.push({ itemId: item.id, error: `Preço não encontrado em prices_RN.json para "${item.id}"` });
     }
     const mult = getPadraoMultiplier(inputs.padrao, item.grupo);
-    const matUnit = item.inclui_material ? price.material_unit * mult : 0;
-    const moUnit = item.inclui_mo ? price.mo_unit : 0;
+
+    // Material unit: override from insumo coefficients if toggle on
+    let matUnit: number;
+    if (item.inclui_material && precos.usarPrecosInsumos) {
+      const fromCoeffs = calcMaterialUnitFromCoeffs(item.id, precos);
+      matUnit = (fromCoeffs !== null && fromCoeffs > 0) ? fromCoeffs * mult : price.material_unit * mult;
+    } else {
+      matUnit = item.inclui_material ? price.material_unit * mult : 0;
+    }
+
+    // MO unit: override from HH if toggle on
+    let moUnit: number;
+    if (item.inclui_mo && precos.usarPrecosMaoObraHH) {
+      moUnit = calcMoUnitFromHH(item.id, item.grupo, price.mo_unit, precos);
+    } else {
+      moUnit = item.inclui_mo ? price.mo_unit : 0;
+    }
 
     return {
       id: item.id,
@@ -128,6 +270,8 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
       custoMO: qtd * moUnit,
       totalComMaterial: qtd * (matUnit + moUnit),
       totalSemMaterial: qtd * moUnit,
+      materialUnitUsed: matUnit,
+      moUnitUsed: moUnit,
       error: evalResult.error,
     };
   });
@@ -161,7 +305,6 @@ export function calcBudget(inputs: ProjectInputs, derived: DerivedVars): BudgetR
     groupMap.set(item.grupo, g);
   }
 
-  // Preserve group order from items
   const groupOrder: string[] = [];
   for (const item of items) {
     if (!groupOrder.includes(item.grupo)) groupOrder.push(item.grupo);
