@@ -87,5 +87,11 @@
   },
   "pedireitoDuplo_area_m2": 0,
   "pedireitoDuplo_altura_m": 0,
-  "tipoPinturaExterna": "ACRILICA"
+  "tipoPinturaExterna": "ACRILICA",
+  "precos": {
+    "usarPrecosInsumos": false,
+    "usarPrecosMaoObraHH": false,
+    "insumos": {},
+    "maoObraHH": {}
+  }
 }

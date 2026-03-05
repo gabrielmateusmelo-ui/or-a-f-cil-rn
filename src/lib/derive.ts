@@ -66,6 +66,13 @@ export interface Comodos {
   gourmet: ComodoEntry;
 }
 
+export interface PrecosInputs {
+  usarPrecosInsumos: boolean;
+  usarPrecosMaoObraHH: boolean;
+  insumos: Record<string, number>;
+  maoObraHH: Record<string, number>;
+}
+
 export interface ProjectInputs {
   areaConstruida_m2: number;
   largura_m: number;
@@ -113,6 +120,7 @@ export interface ProjectInputs {
   pedireitoDuplo_area_m2: number;
   pedireitoDuplo_altura_m: number;
   tipoPinturaExterna: 'ACRILICA' | 'TEXTURA';
+  precos: PrecosInputs;
 }
 
 export interface DerivedVars {
