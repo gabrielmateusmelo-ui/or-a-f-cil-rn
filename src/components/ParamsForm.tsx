@@ -1,9 +1,8 @@
-import { ProjectInputs, MuroInputs, MuroAcabamentos, PiscinaInputs, Comodos, ComodoEntry, defaultMuroAcabamentos, safeComodos, PrecosInputs } from '@/lib/derive';
+import { ProjectInputs, MuroInputs, MuroAcabamentos, PiscinaInputs, Comodos, ComodoEntry, defaultMuroAcabamentos, safeComodos } from '@/lib/derive';
 import { useMemo } from 'react';
 import { derive } from '@/lib/derive';
 import React from 'react';
 import LabelWithHelp from '@/components/LabelWithHelp';
-import sinapiBaseline from '@/model/sinapiBaseline_RN_202412.json';
 
 interface Props {
   inputs: ProjectInputs;
