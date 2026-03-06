@@ -17,6 +17,8 @@ export interface MaterialLine {
   unidade: string;
   quantidade: number;
   categoria: string;
+  sinapiKey: string;
+  precoBase: number;
   precoUnitario: number;
   custoTotal: number;
 }
