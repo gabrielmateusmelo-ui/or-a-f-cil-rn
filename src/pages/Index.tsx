@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { ProjectInputs, derive, safeComodos, PrecosInputs } from '@/lib/derive';
 import { calcBudget } from '@/lib/calcBudget';
 import { calcMaterials } from '@/lib/calcMaterials';
@@ -49,15 +49,8 @@ function buildLaborRolesFromOverrides(inputs: ProjectInputs): Record<string, Lab
 
   const moEntries = sinapiBaseline.maoObraHH as Record<string, { label: string; unit: string; value: number }>;
   const roles: Record<string, LaborRole> = {};
-  // Map SINAPI keys to laborRoles keys
-  const keyMap: Record<string, string> = {
-    PEDREIRO: 'pedreiro', SERVENTE: 'servente', ARMADOR: 'armador',
-    CARPINTEIRO: 'carpinteiro', PINTOR: 'pintor', AZULEJISTA: 'azulejista',
-    ELETRICISTA: 'eletricista', ENCANADOR: 'encanador',
-  };
-  for (const [sinapiKey, entry] of Object.entries(moEntries)) {
-    const roleKey = keyMap[sinapiKey] ?? sinapiKey.toLowerCase();
-    const overrideVal = precos.maoObraHH[sinapiKey];
+  for (const [roleKey, entry] of Object.entries(moEntries)) {
+    const overrideVal = precos.maoObraHH[roleKey];
     roles[roleKey] = {
       descricao: entry.label.replace(/ \(R\$\/h\)/, ''),
       custoHH: overrideVal !== undefined ? overrideVal : entry.value,
@@ -74,6 +67,48 @@ const Index = () => {
   const [hideZero, setHideZero] = useState(true);
   const [search, setSearch] = useState('');
   const [modoTotal, setModoTotal] = useState<'BASELINE' | 'DINAMICO'>('BASELINE');
+
+  const precos: PrecosInputs = inputs.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
+
+  const setPrecos = useCallback((p: Partial<PrecosInputs>) => {
+    setInputs(prev => ({ ...prev, precos: { ...(prev.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} }), ...p } }));
+  }, []);
+
+  // Material override handlers
+  const handleMaterialOverride = useCallback((sinapiKey: string, value: number | null) => {
+    setInputs(prev => {
+      const cur = prev.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
+      const newInsumos = { ...cur.insumos };
+      if (value === null) {
+        delete newInsumos[sinapiKey];
+      } else {
+        newInsumos[sinapiKey] = value;
+      }
+      return { ...prev, precos: { ...cur, insumos: newInsumos, usarPrecosInsumos: true } };
+    });
+  }, []);
+
+  const clearMaterialOverrides = useCallback(() => {
+    setPrecos({ insumos: {} });
+  }, [setPrecos]);
+
+  // Labor override handlers
+  const handleLaborOverride = useCallback((roleKey: string, value: number | null) => {
+    setInputs(prev => {
+      const cur = prev.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
+      const newMO = { ...cur.maoObraHH };
+      if (value === null) {
+        delete newMO[roleKey];
+      } else {
+        newMO[roleKey] = value;
+      }
+      return { ...prev, precos: { ...cur, maoObraHH: newMO, usarPrecosMaoObraHH: true } };
+    });
+  }, []);
+
+  const clearLaborOverrides = useCallback(() => {
+    setPrecos({ maoObraHH: {} });
+  }, [setPrecos]);
 
   const derived = useMemo(() => derive(inputs), [inputs]);
   const result = useMemo(() => calcBudget(inputs, derived), [inputs, derived]);
@@ -95,8 +130,6 @@ const Index = () => {
   );
 
   const hasDynOverrides = hasOverrides(inputs);
-
-  // Auto-switch to DINAMICO when overrides exist
   const effectiveModo = hasDynOverrides ? modoTotal : 'BASELINE';
 
   const tipoCasaLabel = inputs.tipoCasa === 'TERREA_SUBSOLO_1PAV' ? 'Térrea + Subsolo + 1 Pav.'
@@ -154,12 +187,14 @@ const Index = () => {
                   </button>
                 ))}
               </div>
-              {(activeTab === 'com' || activeTab === 'sem') && (
+              {(activeTab === 'com' || activeTab === 'sem' || activeTab === 'materiais') && (
                 <>
-                  <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer">
-                    <input type="checkbox" checked={hideZero} onChange={(e) => setHideZero(e.target.checked)} className="rounded border-input" />
-                    Ocultar zerados
-                  </label>
+                  {(activeTab === 'com' || activeTab === 'sem') && (
+                    <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer">
+                      <input type="checkbox" checked={hideZero} onChange={(e) => setHideZero(e.target.checked)} className="rounded border-input" />
+                      Ocultar zerados
+                    </label>
+                  )}
                   <input type="text" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)}
                     className="ml-auto rounded-md border border-input bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring w-48"
                   />
@@ -170,8 +205,27 @@ const Index = () => {
             <div className="bg-card rounded-lg border border-border p-1">
               {activeTab === 'com' && <ServicesTable items={result.items} byGroup={result.byGroup} hideZero={hideZero} search={search} mode="com" />}
               {activeTab === 'sem' && <ServicesTable items={result.items} byGroup={result.byGroup} hideZero={hideZero} search={search} mode="sem" />}
-              {activeTab === 'materiais' && <MaterialsTable materials={materials} search={search} />}
-              {activeTab === 'equipe' && <LaborTable labor={labor} />}
+              {activeTab === 'materiais' && (
+                <MaterialsTable
+                  materials={materials}
+                  search={search}
+                  overrides={precos.insumos}
+                  onOverrideChange={handleMaterialOverride}
+                  onClearAll={clearMaterialOverrides}
+                  usarPrecos={precos.usarPrecosInsumos}
+                  onToggleUsarPrecos={(v) => setPrecos({ usarPrecosInsumos: v })}
+                />
+              )}
+              {activeTab === 'equipe' && (
+                <LaborTable
+                  labor={labor}
+                  overrides={precos.maoObraHH}
+                  onOverrideChange={handleLaborOverride}
+                  onClearAll={clearLaborOverrides}
+                  usarHH={precos.usarPrecosMaoObraHH}
+                  onToggleUsarHH={(v) => setPrecos({ usarPrecosMaoObraHH: v })}
+                />
+              )}
             </div>
 
             <DebugPanel inputs={inputs} derived={derived} result={result} />

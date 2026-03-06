@@ -85,6 +85,8 @@ export function calcMaterials(items: ServiceItem[], inputs: ProjectInputs): Mate
       const consumoComPerda = consumo * (1 + perdaPct / 100);
 
       const unitPrice = getInsumoPrice(coeff.materialId, precos);
+      const basePrice = getBasePrice(coeff.materialId);
+      const sKey = materialIdToSinapiKey[coeff.materialId] ?? '';
 
       const key = `${coeff.materialId}__${coeff.unidade}`;
       const existing = agg.get(key);
@@ -98,6 +100,8 @@ export function calcMaterials(items: ServiceItem[], inputs: ProjectInputs): Mate
           unidade: coeff.unidade,
           quantidade: consumoComPerda,
           categoria: coeff.categoria,
+          sinapiKey: sKey,
+          precoBase: basePrice,
           precoUnitario: unitPrice,
           custoTotal: consumoComPerda * unitPrice,
         });
