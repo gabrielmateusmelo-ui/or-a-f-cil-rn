@@ -153,23 +153,6 @@ export default function ParamsForm({ inputs, onChange }: Props) {
     onChange({ ...inputs, comodos: updated });
   };
 
-  const precos: PrecosInputs = inputs.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
-
-  const setPrecos = (p: Partial<PrecosInputs>) =>
-    onChange({ ...inputs, precos: { ...precos, ...p } });
-
-  const setInsumo = (key: string, val: number) =>
-    setPrecos({ insumos: { ...precos.insumos, [key]: val } });
-
-  const setMaoObraHH = (key: string, val: number) =>
-    setPrecos({ maoObraHH: { ...precos.maoObraHH, [key]: val } });
-
-  const getInsumoVal = (key: string, baseline: number) => precos.insumos[key] ?? baseline;
-  const getMoVal = (key: string, baseline: number) => precos.maoObraHH[key] ?? baseline;
-
-  const resetSinapi = () => {
-    setPrecos({ insumos: {}, maoObraHH: {} });
-  };
 
   const acabamentos: MuroAcabamentos = inputs.muro?.acabamentos ?? defaultMuroAcabamentos();
 
