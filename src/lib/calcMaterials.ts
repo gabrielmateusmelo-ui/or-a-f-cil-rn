@@ -17,6 +17,8 @@ export interface MaterialLine {
   unidade: string;
   quantidade: number;
   categoria: string;
+  sinapiKey: string;
+  precoBase: number;
   precoUnitario: number;
   custoTotal: number;
 }
@@ -54,12 +56,18 @@ const materialIdToSinapiKey: Record<string, string> = {
   'cabo_eletrico': 'CABO_M', 'tubo_pvc': 'TUBO_PVC_M',
 };
 
+function getBasePrice(materialId: string): number {
+  const sinapiKey = materialIdToSinapiKey[materialId];
+  if (!sinapiKey) return 0;
+  const baseline = (sinapiBaseline.insumos as any)[sinapiKey];
+  return baseline?.value ?? 0;
+}
+
 function getInsumoPrice(materialId: string, precos: PrecosInputs): number {
   const sinapiKey = materialIdToSinapiKey[materialId];
   if (!sinapiKey) return 0;
   if (precos.insumos[sinapiKey] !== undefined) return precos.insumos[sinapiKey];
-  const baseline = (sinapiBaseline.insumos as any)[sinapiKey];
-  return baseline?.value ?? 0;
+  return getBasePrice(materialId);
 }
 
 export function calcMaterials(items: ServiceItem[], inputs: ProjectInputs): MaterialLine[] {
@@ -77,6 +85,8 @@ export function calcMaterials(items: ServiceItem[], inputs: ProjectInputs): Mate
       const consumoComPerda = consumo * (1 + perdaPct / 100);
 
       const unitPrice = getInsumoPrice(coeff.materialId, precos);
+      const basePrice = getBasePrice(coeff.materialId);
+      const sKey = materialIdToSinapiKey[coeff.materialId] ?? '';
 
       const key = `${coeff.materialId}__${coeff.unidade}`;
       const existing = agg.get(key);
@@ -90,6 +100,8 @@ export function calcMaterials(items: ServiceItem[], inputs: ProjectInputs): Mate
           unidade: coeff.unidade,
           quantidade: consumoComPerda,
           categoria: coeff.categoria,
+          sinapiKey: sKey,
+          precoBase: basePrice,
           precoUnitario: unitPrice,
           custoTotal: consumoComPerda * unitPrice,
         });

@@ -1,9 +1,8 @@
-import { ProjectInputs, MuroInputs, MuroAcabamentos, PiscinaInputs, Comodos, ComodoEntry, defaultMuroAcabamentos, safeComodos, PrecosInputs } from '@/lib/derive';
+import { ProjectInputs, MuroInputs, MuroAcabamentos, PiscinaInputs, Comodos, ComodoEntry, defaultMuroAcabamentos, safeComodos } from '@/lib/derive';
 import { useMemo } from 'react';
 import { derive } from '@/lib/derive';
 import React from 'react';
 import LabelWithHelp from '@/components/LabelWithHelp';
-import sinapiBaseline from '@/model/sinapiBaseline_RN_202412.json';
 
 interface Props {
   inputs: ProjectInputs;
@@ -133,9 +132,6 @@ const COMODO_LABELS: Record<keyof Comodos, string> = {
 
 const COMODO_KEYS = Object.keys(COMODO_LABELS) as (keyof Comodos)[];
 
-// SINAPI insumo entries for UI
-const SINAPI_INSUMOS = Object.entries(sinapiBaseline.insumos) as [string, { label: string; unit: string; value: number }][];
-const SINAPI_MO = Object.entries(sinapiBaseline.maoObraHH) as [string, { label: string; unit: string; value: number }][];
 
 export default function ParamsForm({ inputs, onChange }: Props) {
   const set = <K extends keyof ProjectInputs>(key: K, val: ProjectInputs[K]) =>
@@ -157,23 +153,6 @@ export default function ParamsForm({ inputs, onChange }: Props) {
     onChange({ ...inputs, comodos: updated });
   };
 
-  const precos: PrecosInputs = inputs.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
-
-  const setPrecos = (p: Partial<PrecosInputs>) =>
-    onChange({ ...inputs, precos: { ...precos, ...p } });
-
-  const setInsumo = (key: string, val: number) =>
-    setPrecos({ insumos: { ...precos.insumos, [key]: val } });
-
-  const setMaoObraHH = (key: string, val: number) =>
-    setPrecos({ maoObraHH: { ...precos.maoObraHH, [key]: val } });
-
-  const getInsumoVal = (key: string, baseline: number) => precos.insumos[key] ?? baseline;
-  const getMoVal = (key: string, baseline: number) => precos.maoObraHH[key] ?? baseline;
-
-  const resetSinapi = () => {
-    setPrecos({ insumos: {}, maoObraHH: {} });
-  };
 
   const acabamentos: MuroAcabamentos = inputs.muro?.acabamentos ?? defaultMuroAcabamentos();
 
@@ -192,8 +171,6 @@ export default function ParamsForm({ inputs, onChange }: Props) {
   if (tipoCasa === 'TERREA_SUBSOLO_1PAV') escadasAuto = 2;
 
   const pdLocal = inputs.peDireitoDuploLocal || 'NENHUM';
-
-  const [precosOpen, setPrecosOpen] = React.useState(false);
 
   return (
     <div className="space-y-5">
@@ -424,61 +401,6 @@ export default function ParamsForm({ inputs, onChange }: Props) {
         <CheckboxField label="Casa de máquinas" checked={inputs.piscina.casaMaquinas} onChange={(v) => setPiscina('casaMaquinas', v)} />
       </Section>
 
-      {/* SINAPI Prices Section */}
-      <div>
-        <button
-          onClick={() => setPrecosOpen(!precosOpen)}
-          className="w-full flex items-center justify-between text-sm font-semibold text-foreground mb-2 hover:text-primary transition-colors"
-        >
-          <span>💲 Preços (SINAPI RN – editável)</span>
-          <span className="text-xs text-muted-foreground">{precosOpen ? '▲' : '▼'}</span>
-        </button>
-        {precosOpen && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2">
-              <CheckboxField label="Usar preços de insumos" checked={precos.usarPrecosInsumos} onChange={(v) => setPrecos({ usarPrecosInsumos: v })}
-                help="Se marcado, o custo de material dos serviços é recalculado pelos coeficientes × preço unitário informado abaixo." />
-              <CheckboxField label="Usar custos HH (MO)" checked={precos.usarPrecosMaoObraHH} onChange={(v) => setPrecos({ usarPrecosMaoObraHH: v })}
-                help="Se marcado, o custo de mão de obra é recalculado via HH estimadas × custo horário informado." />
-            </div>
-
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1.5">Insumos (R$/unidade)</p>
-              <div className="space-y-1">
-                {SINAPI_INSUMOS.map(([key, entry]) => (
-                  <div key={key} className="grid grid-cols-[1fr_80px] gap-1 items-center">
-                    <span className="text-[11px] text-foreground truncate">{entry.label}</span>
-                    <input type="number" min={0} step={0.01} value={getInsumoVal(key, entry.value)}
-                      onChange={(e) => setInsumo(key, parseFloat(e.target.value) || 0)}
-                      className="w-full rounded border border-input bg-card px-1.5 py-1 text-xs font-mono text-right focus:outline-none focus:ring-1 focus:ring-ring"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1.5">Mão de obra (R$/h)</p>
-              <div className="space-y-1">
-                {SINAPI_MO.map(([key, entry]) => (
-                  <div key={key} className="grid grid-cols-[1fr_80px] gap-1 items-center">
-                    <span className="text-[11px] text-foreground truncate">{entry.label}</span>
-                    <input type="number" min={0} step={0.5} value={getMoVal(key, entry.value)}
-                      onChange={(e) => setMaoObraHH(key, parseFloat(e.target.value) || 0)}
-                      className="w-full rounded border border-input bg-card px-1.5 py-1 text-xs font-mono text-right focus:outline-none focus:ring-1 focus:ring-ring"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <button onClick={resetSinapi}
-              className="w-full text-xs text-center py-1.5 rounded border border-border text-muted-foreground hover:bg-muted transition-colors">
-              Restaurar SINAPI (baseline)
-            </button>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
