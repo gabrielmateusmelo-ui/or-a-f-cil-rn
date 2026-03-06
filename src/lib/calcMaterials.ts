@@ -56,12 +56,18 @@ const materialIdToSinapiKey: Record<string, string> = {
   'cabo_eletrico': 'CABO_M', 'tubo_pvc': 'TUBO_PVC_M',
 };
 
+function getBasePrice(materialId: string): number {
+  const sinapiKey = materialIdToSinapiKey[materialId];
+  if (!sinapiKey) return 0;
+  const baseline = (sinapiBaseline.insumos as any)[sinapiKey];
+  return baseline?.value ?? 0;
+}
+
 function getInsumoPrice(materialId: string, precos: PrecosInputs): number {
   const sinapiKey = materialIdToSinapiKey[materialId];
   if (!sinapiKey) return 0;
   if (precos.insumos[sinapiKey] !== undefined) return precos.insumos[sinapiKey];
-  const baseline = (sinapiBaseline.insumos as any)[sinapiKey];
-  return baseline?.value ?? 0;
+  return getBasePrice(materialId);
 }
 
 export function calcMaterials(items: ServiceItem[], inputs: ProjectInputs): MaterialLine[] {
