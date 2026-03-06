@@ -132,9 +132,6 @@ const COMODO_LABELS: Record<keyof Comodos, string> = {
 
 const COMODO_KEYS = Object.keys(COMODO_LABELS) as (keyof Comodos)[];
 
-// SINAPI insumo entries for UI
-const SINAPI_INSUMOS = Object.entries(sinapiBaseline.insumos) as [string, { label: string; unit: string; value: number }][];
-const SINAPI_MO = Object.entries(sinapiBaseline.maoObraHH) as [string, { label: string; unit: string; value: number }][];
 
 export default function ParamsForm({ inputs, onChange }: Props) {
   const set = <K extends keyof ProjectInputs>(key: K, val: ProjectInputs[K]) =>
