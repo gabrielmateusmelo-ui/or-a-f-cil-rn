@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
-import { ProjectInputs, derive, safeComodos } from '@/lib/derive';
+import { ProjectInputs, derive, safeComodos, PrecosInputs } from '@/lib/derive';
 import { calcBudget } from '@/lib/calcBudget';
 import { calcMaterials } from '@/lib/calcMaterials';
-import { calcLabor } from '@/lib/calcLabor';
+import { calcLabor, LaborRole } from '@/lib/calcLabor';
+import { calcTotals, Summary } from '@/lib/calcTotals';
 import defaultInputsRaw from '@/model/defaultInputs.json';
+import sinapiBaseline from '@/model/sinapiBaseline_RN_202412.json';
 import ParamsForm from '@/components/ParamsForm';
 import KPICards from '@/components/KPICards';
 import ServicesTable from '@/components/ServicesTable';
@@ -26,13 +28,42 @@ function deepMerge(target: any, source: any): any {
       }
     }
   }
-  // Also include keys from source not in target
   for (const key of Object.keys(source)) {
     if (!(key in target)) {
       result[key] = source[key];
     }
   }
   return result;
+}
+
+function hasOverrides(inputs: ProjectInputs): boolean {
+  const precos: PrecosInputs = inputs.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
+  if (precos.usarPrecosInsumos && Object.keys(precos.insumos).length > 0) return true;
+  if (precos.usarPrecosMaoObraHH && Object.keys(precos.maoObraHH).length > 0) return true;
+  return false;
+}
+
+function buildLaborRolesFromOverrides(inputs: ProjectInputs): Record<string, LaborRole> | undefined {
+  const precos: PrecosInputs = inputs.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
+  if (!precos.usarPrecosMaoObraHH) return undefined;
+
+  const moEntries = sinapiBaseline.maoObraHH as Record<string, { label: string; unit: string; value: number }>;
+  const roles: Record<string, LaborRole> = {};
+  // Map SINAPI keys to laborRoles keys
+  const keyMap: Record<string, string> = {
+    PEDREIRO: 'pedreiro', SERVENTE: 'servente', ARMADOR: 'armador',
+    CARPINTEIRO: 'carpinteiro', PINTOR: 'pintor', AZULEJISTA: 'azulejista',
+    ELETRICISTA: 'eletricista', ENCANADOR: 'encanador',
+  };
+  for (const [sinapiKey, entry] of Object.entries(moEntries)) {
+    const roleKey = keyMap[sinapiKey] ?? sinapiKey.toLowerCase();
+    const overrideVal = precos.maoObraHH[sinapiKey];
+    roles[roleKey] = {
+      descricao: entry.label.replace(/ \(R\$\/h\)/, ''),
+      custoHH: overrideVal !== undefined ? overrideVal : entry.value,
+    };
+  }
+  return roles;
 }
 
 const Index = () => {
@@ -42,11 +73,31 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('com');
   const [hideZero, setHideZero] = useState(true);
   const [search, setSearch] = useState('');
+  const [modoTotal, setModoTotal] = useState<'BASELINE' | 'DINAMICO'>('BASELINE');
 
   const derived = useMemo(() => derive(inputs), [inputs]);
   const result = useMemo(() => calcBudget(inputs, derived), [inputs, derived]);
   const materials = useMemo(() => calcMaterials(result.items, inputs), [result.items, inputs]);
-  const labor = useMemo(() => calcLabor(result.items), [result.items]);
+
+  const laborRolesOverride = useMemo(() => buildLaborRolesFromOverrides(inputs), [inputs]);
+  const labor = useMemo(() => calcLabor(result.items, laborRolesOverride), [result.items, laborRolesOverride]);
+
+  const bdiRate = result.bdiPct;
+  const area = derived.areaConstruida;
+
+  const summaryBaseline = useMemo(
+    () => calcTotals(result, materials, labor, bdiRate, area, 'BASELINE'),
+    [result, materials, labor, bdiRate, area]
+  );
+  const summaryDinamico = useMemo(
+    () => calcTotals(result, materials, labor, bdiRate, area, 'DINAMICO'),
+    [result, materials, labor, bdiRate, area]
+  );
+
+  const hasDynOverrides = hasOverrides(inputs);
+
+  // Auto-switch to DINAMICO when overrides exist
+  const effectiveModo = hasDynOverrides ? modoTotal : 'BASELINE';
 
   const tipoCasaLabel = inputs.tipoCasa === 'TERREA_SUBSOLO_1PAV' ? 'Térrea + Subsolo + 1 Pav.'
     : inputs.tipoCasa === 'TERREA_SUBSOLO' ? 'Térrea + Subsolo' : 'Casa térrea';
@@ -79,7 +130,13 @@ const Index = () => {
           </aside>
 
           <main className="flex-1 space-y-4 min-w-0">
-            <KPICards result={result} />
+            <KPICards
+              baseline={summaryBaseline}
+              dinamico={summaryDinamico}
+              modo={effectiveModo}
+              onModoChange={setModoTotal}
+              hasDynamicOverrides={hasDynOverrides}
+            />
 
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex rounded-lg border border-border overflow-hidden">
