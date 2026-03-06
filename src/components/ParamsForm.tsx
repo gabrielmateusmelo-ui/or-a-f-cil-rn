@@ -172,8 +172,6 @@ export default function ParamsForm({ inputs, onChange }: Props) {
 
   const pdLocal = inputs.peDireitoDuploLocal || 'NENHUM';
 
-  const [precosOpen, setPrecosOpen] = React.useState(false);
-
   return (
     <div className="space-y-5">
       <Section title="📐 Dimensões">
