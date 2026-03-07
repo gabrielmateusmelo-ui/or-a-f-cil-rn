@@ -120,12 +120,22 @@
     "inclui_mo": true
   },
   {
-    "id": "telhado",
+    "id": "telhado_fibro",
     "grupo": "Cobertura",
-    "codigo": "CB-01",
-    "descricao": "Cobertura com telhas (fibro/cerâmica)",
+    "codigo": "CB-01a",
+    "descricao": "Cobertura com telha fibrocimento",
     "unidade": "m²",
-    "qtd_expr": "areaTelhado * (isFibro + isCeram)",
+    "qtd_expr": "areaTelhado * isFibro",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "telhado_ceram",
+    "grupo": "Cobertura",
+    "codigo": "CB-01b",
+    "descricao": "Cobertura com telha cerâmica",
+    "unidade": "m²",
+    "qtd_expr": "areaTelhado * isCeram",
     "inclui_material": true,
     "inclui_mo": true
   },
@@ -135,15 +145,15 @@
     "codigo": "CB-02",
     "descricao": "Estrutura de madeira para telhado",
     "unidade": "m²",
-    "qtd_expr": "areaTelhado * (isFibro + isCeram)",
+    "qtd_expr": "areaTelhado * isTelhado",
     "inclui_material": true,
     "inclui_mo": true
   },
   {
-    "id": "impermeabilizacao_cobertura",
+    "id": "cob_laje_imperm",
     "grupo": "Cobertura",
-    "codigo": "CB-04",
-    "descricao": "Impermeabilização de laje de cobertura",
+    "codigo": "CB-04a",
+    "descricao": "Impermeabilização de laje (cobertura)",
     "unidade": "m²",
     "qtd_expr": "areaTelhado * isLaje",
     "inclui_material": true,
@@ -152,10 +162,30 @@
   {
     "id": "forro_pvc",
     "grupo": "Cobertura",
-    "codigo": "CB-03",
+    "codigo": "CB-03a",
     "descricao": "Forro de PVC",
     "unidade": "m²",
-    "qtd_expr": "areaTeto",
+    "qtd_expr": "areaForro_m2 * isForroPVC",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "forro_gesso",
+    "grupo": "Cobertura",
+    "codigo": "CB-03b",
+    "descricao": "Forro de gesso",
+    "unidade": "m²",
+    "qtd_expr": "areaForro_m2 * isForroGesso",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "forro_drywall",
+    "grupo": "Cobertura",
+    "codigo": "CB-03c",
+    "descricao": "Forro de drywall",
+    "unidade": "m²",
+    "qtd_expr": "areaForro_m2 * isForroDrywall",
     "inclui_material": true,
     "inclui_mo": true
   },

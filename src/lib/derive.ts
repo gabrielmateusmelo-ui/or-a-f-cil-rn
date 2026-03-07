@@ -73,6 +73,14 @@ export interface PrecosInputs {
   maoObraHH: Record<string, number>;
 }
 
+export interface RevestAlturaInputs {
+  banheiro_m: number;
+  lavabo_m: number;
+  cozinha_m: number;
+  servico_m: number;
+  gourmet_m: number;
+}
+
 export interface ProjectInputs {
   areaConstruida_m2: number;
   largura_m: number;
@@ -95,7 +103,6 @@ export interface ProjectInputs {
     telha_pct: number;
     impermeab_pct: number;
   };
-  bdiModo: 'automatico' | 'manual';
   bdiManual_pct: number;
   fatorParedesInternas: number;
   percVaosExternos_pct: number;
@@ -120,6 +127,8 @@ export interface ProjectInputs {
   pedireitoDuplo_area_m2: number;
   pedireitoDuplo_altura_m: number;
   tipoPinturaExterna: 'ACRILICA' | 'TEXTURA';
+  forroTipo: 'PVC' | 'GESSO' | 'DRYWALL' | 'SEM_FORRO';
+  revestAltura: RevestAlturaInputs;
   precos: PrecosInputs;
 }
 
@@ -149,6 +158,13 @@ export interface DerivedVars {
   isFibro: number;
   isCeram: number;
   isLaje: number;
+  isTelhado: number;
+  // Forro flags
+  isForroPVC: number;
+  isForroGesso: number;
+  isForroDrywall: number;
+  isSemForro: number;
+  areaForro_m2: number;
   perimetroMuro: number;
   areaMuro: number;
   areaMuroFrente1Face: number;
@@ -276,7 +292,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   }
 
   areaTerreo_m2 = areaConstruida - areaSubsolo_m2_eff - areaPavSuperior_m2_eff;
-  // Clamp: normalize proportionally if negative
   if (areaTerreo_m2 < 0) {
     const totalParts = areaSubsolo_m2_eff + areaPavSuperior_m2_eff;
     if (totalParts > 0) {
@@ -307,7 +322,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     + comodos.cozinha.areaTotal_m2 + comodos.servico.areaTotal_m2
     + (comodos.gourmet.areaTotal_m2 * 0.3);
 
-  // Use comodos-derived if sum > 0, else fallback to legacy inputs
   const areaMolhadasEff = areaMolhadas > 0 ? areaMolhadas : (inputs.areaMolhadas_m2 || 0);
   const areaVarandaEff = areaVaranda;
 
@@ -324,15 +338,23 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const areaSeca = Math.max(0, areaInterna - areaMolhadasEff);
   const areaTeto = Math.max(0, areaConstruida - (inputs.areaTetoExcluiVaranda ? areaVarandaEff : 0));
 
-  // === Revestimento de parede molhada (rastreável) ===
-  const altRevParede = inputs.alturaRevestParede_m || 1.5;
+  // === Revestimento de parede molhada POR AMBIENTE ===
+  const revestAltura = inputs.revestAltura ?? { banheiro_m: 1.5, lavabo_m: 1.2, cozinha_m: 1.5, servico_m: 1.5, gourmet_m: 1.2 };
   let areaRevestParedeMolhada_m2 = 0;
-  const tiposMolhados = [comodos.banheiros, comodos.lavabos, comodos.cozinha, comodos.servico] as const;
-  for (const cm of tiposMolhados) {
-    if (cm.qtd > 0 && cm.areaTotal_m2 > 0) {
-      const areaMed = cm.areaTotal_m2 / cm.qtd;
+
+  const ambientesMolhados: { entry: ComodoEntry; altura: number }[] = [
+    { entry: comodos.banheiros, altura: revestAltura.banheiro_m },
+    { entry: comodos.lavabos,   altura: revestAltura.lavabo_m },
+    { entry: comodos.cozinha,   altura: revestAltura.cozinha_m },
+    { entry: comodos.servico,   altura: revestAltura.servico_m },
+    { entry: comodos.gourmet,   altura: revestAltura.gourmet_m },
+  ];
+
+  for (const { entry, altura } of ambientesMolhados) {
+    if (entry.qtd > 0 && entry.areaTotal_m2 > 0 && altura > 0) {
+      const areaMed = entry.areaTotal_m2 / entry.qtd;
       const perimAprox = 4 * Math.sqrt(areaMed);
-      areaRevestParedeMolhada_m2 += perimAprox * altRevParede * cm.qtd;
+      areaRevestParedeMolhada_m2 += perimAprox * altura * entry.qtd;
     }
   }
   areaRevestParedeMolhada_m2 *= 0.9; // fator portas/vãos
@@ -344,7 +366,8 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   } else if (areaRevestParedeMolhada_m2 > 0) {
     areaRevestimentoCeramicoParede = areaRevestParedeMolhada_m2;
   } else {
-    // Legacy fallback
+    // Legacy fallback using alturaRevestParede_m
+    const altRevParede = inputs.alturaRevestParede_m || 1.5;
     const numBanh = inputs.numBanheiros || 0;
     const areaRevest = (numBanh * 12) + (Math.max(0, areaMolhadasEff - numBanh * 4) * 0.9);
     areaRevestimentoCeramicoParede = areaRevest * (altRevParede / 1.5);
@@ -370,6 +393,15 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const isFibro = inputs.tipoCobertura === 'fibrocimento' ? 1 : 0;
   const isCeram = inputs.tipoCobertura === 'cerâmica' ? 1 : 0;
   const isLaje = inputs.tipoCobertura === 'laje impermeabilizada' ? 1 : 0;
+  const isTelhado = isFibro + isCeram;
+
+  // === Forro ===
+  const forroTipo = inputs.forroTipo || 'PVC';
+  const isForroPVC = forroTipo === 'PVC' ? 1 : 0;
+  const isForroGesso = forroTipo === 'GESSO' ? 1 : 0;
+  const isForroDrywall = forroTipo === 'DRYWALL' ? 1 : 0;
+  const isSemForro = forroTipo === 'SEM_FORRO' ? 1 : 0;
+  const areaForro_m2 = Math.max(0, areaConstruida - areaVarandaEff);
 
   // === Instalações por pontos ===
   const pontosEletricos = Math.round(
@@ -431,7 +463,8 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     areaRevestParedeMolhada_m2,
     peDireito: inputs.peDireito_m,
     numBanheiros, numQuartos,
-    isFibro, isCeram, isLaje,
+    isFibro, isCeram, isLaje, isTelhado,
+    isForroPVC, isForroGesso, isForroDrywall, isSemForro, areaForro_m2,
     perimetroMuro, areaMuro,
     areaMuroFrente1Face, areaMuroLaterais1Face, areaMuroFundo1Face,
     areaMuroChapisco_m2, areaMuroReboco_m2, areaMuroPintura_m2,

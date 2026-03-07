@@ -85,11 +85,17 @@
     { "materialId": "textura_acrilica", "descricao": "Textura acrílica 25kg", "unidade": "lata", "coef_por_unidade_servico": 0.04, "categoria": "tinta" },
     { "materialId": "selador_acrilico", "descricao": "Selador acrílico 18L", "unidade": "lata", "coef_por_unidade_servico": 0.008, "categoria": "tinta" }
   ],
-  "telhado": [
-    { "materialId": "telha", "descricao": "Telha (conforme tipo)", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "cobertura" }
+  "telhado_fibro": [
+    { "materialId": "telha_fibro", "descricao": "Telha fibrocimento", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "cobertura" }
+  ],
+  "telhado_ceram": [
+    { "materialId": "telha_ceram", "descricao": "Telha cerâmica", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "cobertura" }
   ],
   "estrutura_madeira_telhado": [
     { "materialId": "madeiramento", "descricao": "Madeiramento (caibros e ripas)", "unidade": "m²", "coef_por_unidade_servico": 1.0, "categoria": "madeira" }
+  ],
+  "cob_laje_imperm": [
+    { "materialId": "manta_imperm_laje", "descricao": "Manta asfáltica 4mm", "unidade": "m²", "coef_por_unidade_servico": 1.0, "categoria": "impermeabilizacao" }
   ],
   "impermeabilizacao_cobertura": [
     { "materialId": "manta_asfaltica_cobertura", "descricao": "Manta asfáltica 4mm (cobertura)", "unidade": "m²", "coef_por_unidade_servico": 1.1, "categoria": "impermeabilizacao" },
@@ -97,6 +103,14 @@
   ],
   "forro_pvc": [
     { "materialId": "forro_pvc_material", "descricao": "Forro PVC liso 200mm", "unidade": "m²", "coef_por_unidade_servico": 1.05, "categoria": "outros" }
+  ],
+  "forro_gesso": [
+    { "materialId": "gesso_placa", "descricao": "Placa de gesso", "unidade": "m²", "coef_por_unidade_servico": 1.0, "categoria": "outros" },
+    { "materialId": "perfil_met_gesso", "descricao": "Perfil metálico", "unidade": "m", "coef_por_unidade_servico": 0.8, "categoria": "outros" }
+  ],
+  "forro_drywall": [
+    { "materialId": "drywall_placa", "descricao": "Placa de drywall", "unidade": "m²", "coef_por_unidade_servico": 1.0, "categoria": "outros" },
+    { "materialId": "perfil_met_drywall", "descricao": "Perfil metálico", "unidade": "m", "coef_por_unidade_servico": 1.0, "categoria": "outros" }
   ],
   "escada_pacote": [
     { "materialId": "concreto_escada", "descricao": "Concreto para escada", "unidade": "m³", "coef_por_unidade_servico": 0.8, "categoria": "concreto" },
