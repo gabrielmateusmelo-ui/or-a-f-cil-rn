@@ -1,4 +1,4 @@
-import { ProjectInputs, MuroInputs, MuroAcabamentos, PiscinaInputs, Comodos, ComodoEntry, defaultMuroAcabamentos, safeComodos } from '@/lib/derive';
+import { ProjectInputs, MuroInputs, MuroAcabamentos, PiscinaInputs, Comodos, ComodoEntry, RevestAlturaInputs, defaultMuroAcabamentos, safeComodos } from '@/lib/derive';
 import { useMemo } from 'react';
 import { derive } from '@/lib/derive';
 import React from 'react';
@@ -132,6 +132,13 @@ const COMODO_LABELS: Record<keyof Comodos, string> = {
 
 const COMODO_KEYS = Object.keys(COMODO_LABELS) as (keyof Comodos)[];
 
+const REVEST_ALTURA_LABELS: { key: keyof RevestAlturaInputs; label: string }[] = [
+  { key: 'banheiro_m', label: 'Banheiro' },
+  { key: 'lavabo_m', label: 'Lavabo' },
+  { key: 'cozinha_m', label: 'Cozinha' },
+  { key: 'servico_m', label: 'Serviço' },
+  { key: 'gourmet_m', label: 'Gourmet' },
+];
 
 export default function ParamsForm({ inputs, onChange }: Props) {
   const set = <K extends keyof ProjectInputs>(key: K, val: ProjectInputs[K]) =>
@@ -153,6 +160,10 @@ export default function ParamsForm({ inputs, onChange }: Props) {
     onChange({ ...inputs, comodos: updated });
   };
 
+  const revestAltura: RevestAlturaInputs = inputs.revestAltura ?? { banheiro_m: 1.5, lavabo_m: 1.2, cozinha_m: 1.5, servico_m: 1.5, gourmet_m: 1.2 };
+  const setRevestAltura = (key: keyof RevestAlturaInputs, val: number) => {
+    onChange({ ...inputs, revestAltura: { ...revestAltura, [key]: val } });
+  };
 
   const acabamentos: MuroAcabamentos = inputs.muro?.acabamentos ?? defaultMuroAcabamentos();
 
@@ -266,15 +277,24 @@ export default function ParamsForm({ inputs, onChange }: Props) {
 
       <Section title="🏗️ Especificações">
         <SelectField label="Tipo de cobertura" value={inputs.tipoCobertura} onChange={(v) => set('tipoCobertura', v as any)}
-          help="Tipo de cobertura. Afeta custo de telhado, estrutura e se inclui impermeabilização de laje."
+          help="Tipo de cobertura. Fibrocimento é mais barata; cerâmica mais cara; laje inclui impermeabilização."
           options={[
             { value: 'fibrocimento', label: 'Fibrocimento' },
             { value: 'cerâmica', label: 'Cerâmica' },
             { value: 'laje impermeabilizada', label: 'Laje impermeabilizada' },
           ]}
         />
+        <SelectField label="Tipo de forro" value={inputs.forroTipo || 'PVC'} onChange={(v) => set('forroTipo', v as any)}
+          help="Tipo de forro. Afeta custo e material da cobertura interna. SEM_FORRO zera esse item."
+          options={[
+            { value: 'PVC', label: 'PVC' },
+            { value: 'GESSO', label: 'Gesso' },
+            { value: 'DRYWALL', label: 'Drywall' },
+            { value: 'SEM_FORRO', label: 'Sem forro' },
+          ]}
+        />
         <SelectField label="Padrão" value={inputs.padrao} onChange={(v) => set('padrao', v as any)}
-          help="Padrão de acabamento. Aplica multiplicadores nos custos de material por grupo (acabamento, esquadrias, etc.) e no BDI automático."
+          help="Padrão de acabamento. Aplica multiplicadores nos custos de material por grupo."
           options={[
             { value: 'Baixo', label: 'Baixo' },
             { value: 'Médio', label: 'Médio' },
@@ -290,13 +310,25 @@ export default function ParamsForm({ inputs, onChange }: Props) {
           help="Percentual de vãos (portas/janelas) nas paredes externas." />
         <InputField label="Portas internas" value={inputs.percPortasInternas_pct} onChange={(v) => set('percPortasInternas_pct', v)} suffix="%"
           help="Percentual de vãos nas paredes internas (portas)." />
-        <InputField label="Altura revest. parede" value={inputs.alturaRevestParede_m} onChange={(v) => set('alturaRevestParede_m', v)} suffix="m" step={0.1}
-          help="Altura do revestimento cerâmico em áreas molhadas (m)." />
         <InputField label="Override revest. (0=auto)" value={inputs.areaRevestParedeOverride_m2} onChange={(v) => set('areaRevestParedeOverride_m2', v)} suffix="m²"
           help="Se > 0, substitui o cálculo automático de área de revestimento cerâmico." />
         <InputField label="Revest. parede (calc.)" value={derived.areaRevestParedeMolhada_m2.toFixed(1)} onChange={() => {}} suffix="m²" readOnly />
         <CheckboxField label="Teto exclui varanda" checked={inputs.areaTetoExcluiVaranda} onChange={(v) => set('areaTetoExcluiVaranda', v)}
           help="Se marcado, a área de teto (forro/pintura) não inclui a varanda." />
+      </Section>
+
+      <Section title="📏 Altura Revestimento por Ambiente">
+        {REVEST_ALTURA_LABELS.map(({ key, label }) => (
+          <InputField
+            key={key}
+            label={label}
+            value={revestAltura[key]}
+            onChange={(v) => setRevestAltura(key, v)}
+            suffix="m"
+            step={0.1}
+            help={`Altura do revestimento cerâmico no ${label.toLowerCase()} (m). Afeta quantitativo de cerâmica de parede.`}
+          />
+        ))}
       </Section>
 
       <Section title="🔧 Avançado">
@@ -340,17 +372,8 @@ export default function ParamsForm({ inputs, onChange }: Props) {
       </Section>
 
       <Section title="💰 BDI">
-        <SelectField label="Modo" value={inputs.bdiModo} onChange={(v) => set('bdiModo', v as any)}
-          help="Automático calcula o BDI pelo padrão da obra. Manual permite definir o percentual."
-          options={[
-            { value: 'automatico', label: 'Automático (por padrão)' },
-            { value: 'manual', label: 'Manual' },
-          ]}
-        />
-        {inputs.bdiModo === 'manual' && (
-          <InputField label="BDI Manual" value={inputs.bdiManual_pct} onChange={(v) => set('bdiManual_pct', v)} suffix="%" step={1} fullSpan
-            help="Percentual de BDI aplicado sobre o custo direto total." />
-        )}
+        <InputField label="BDI" value={inputs.bdiManual_pct ?? 0} onChange={(v) => set('bdiManual_pct', v)} suffix="%" step={1} fullSpan
+          help="Percentual de BDI aplicado sobre o custo direto total. Inicia em 0%." />
       </Section>
 
       <Section title="📉 Perdas">

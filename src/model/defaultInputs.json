@@ -20,8 +20,7 @@
     "telha_pct": 8,
     "impermeab_pct": 5
   },
-  "bdiModo": "automatico",
-  "bdiManual_pct": 20,
+  "bdiManual_pct": 0,
   "fatorParedesInternas": 0.60,
   "percVaosExternos_pct": 15,
   "percPortasInternas_pct": 10,
@@ -88,6 +87,14 @@
   "pedireitoDuplo_area_m2": 0,
   "pedireitoDuplo_altura_m": 0,
   "tipoPinturaExterna": "ACRILICA",
+  "forroTipo": "PVC",
+  "revestAltura": {
+    "banheiro_m": 1.5,
+    "lavabo_m": 1.2,
+    "cozinha_m": 1.5,
+    "servico_m": 1.5,
+    "gourmet_m": 1.2
+  },
   "precos": {
     "usarPrecosInsumos": false,
     "usarPrecosMaoObraHH": false,
