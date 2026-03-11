@@ -215,7 +215,7 @@
     "codigo": "RV-03",
     "descricao": "Chapisco interno",
     "unidade": "m²",
-    "qtd_expr": "areaParedeExternaLiquida + areaParedeInterna2Faces",
+    "qtd_expr": "areaParedeExternaLiquida + areaParedeInterna2Faces + areaExtraParedesPDduplo",
     "inclui_material": true,
     "inclui_mo": true
   },
