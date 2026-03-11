@@ -207,7 +207,11 @@ export interface DerivedVars {
   pontosHidraulicos: number;
   // Soma cômodos
   somaAreasComodos: number;
-  [key: string]: number;
+  pdDuploAviso: string;
+  pdDuploDeltaH: number;
+  pdDuploPerimetroAprox: number;
+  sugestaoAlturaPD: number;
+  [key: string]: number | string;
 }
 
 const defaultComodoEntry = (): ComodoEntry => ({ qtd: 0, areaTotal_m2: 0 });

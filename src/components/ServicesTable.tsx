@@ -117,13 +117,16 @@ export default function ServicesTable({ items, byGroup, hideZero, search, mode, 
       {/* Group Summary */}
       {activeGroups.length > 0 && (
         <div className="overflow-x-auto">
-          <h3 className="text-sm font-bold text-foreground px-2 py-2">Resumo por Etapas</h3>
+          <div className="flex items-center gap-2 px-2 py-2">
+            <h3 className="text-sm font-bold text-foreground">Resumo por Etapas</h3>
+            {hideBdi && <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded">BDI: 0%</span>}
+          </div>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left">
                 <th className="py-2 px-2 text-xs font-semibold text-muted-foreground">Grupo</th>
                 <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">Subtotal</th>
-                <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">BDI</th>
+                {!hideBdi && <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">BDI</th>}
                 <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">Total</th>
                 <th className="py-2 px-2 text-xs font-semibold text-muted-foreground text-right">%</th>
               </tr>
@@ -141,7 +144,7 @@ export default function ServicesTable({ items, byGroup, hideZero, search, mode, 
                   <tr key={g.group} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
                     <td className="py-1.5 px-2 font-medium">{g.group}</td>
                     <td className="py-1.5 px-2 text-right font-mono">{fmt(sub)}</td>
-                    <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">{fmt(bdi)}</td>
+                    {!hideBdi && <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">{fmt(bdi)}</td>}
                     <td className="py-1.5 px-2 text-right font-mono font-semibold">{fmt(tot)}</td>
                     <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">{share.toFixed(1)}%</td>
                   </tr>
@@ -154,9 +157,11 @@ export default function ServicesTable({ items, byGroup, hideZero, search, mode, 
                 <td className="py-2 px-2 text-right font-mono">
                   {fmt(activeGroups.reduce((s, g) => s + (mode === 'com' ? g.subtotalComMat : g.subtotalSemMat), 0))}
                 </td>
-                <td className="py-2 px-2 text-right font-mono text-muted-foreground">
-                  {fmt(activeGroups.reduce((s, g) => s + (mode === 'com' ? g.bdiComMat : g.bdiSemMat), 0))}
-                </td>
+                {!hideBdi && (
+                  <td className="py-2 px-2 text-right font-mono text-muted-foreground">
+                    {fmt(activeGroups.reduce((s, g) => s + (mode === 'com' ? g.bdiComMat : g.bdiSemMat), 0))}
+                  </td>
+                )}
                 <td className="py-2 px-2 text-right font-mono">
                   {fmt(activeGroups.reduce((s, g) => s + (mode === 'com' ? g.totalComMat : g.totalSemMat), 0))}
                 </td>

@@ -46,9 +46,15 @@ export default function LaborTable({ labor, overrides, onOverrideChange, onClear
           Usar custos HH no orçamento (mão de obra)
         </label>
         {hasAnyOverride && (
-          <button onClick={onClearAll} className="text-xs text-destructive hover:underline ml-auto">
-            Limpar manuais
-          </button>
+          <>
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer">
+              <input type="checkbox" checked={filterManual} onChange={(e) => setFilterManual(e.target.checked)} className="rounded border-input" />
+              Somente manuais
+            </label>
+            <button onClick={onClearAll} className="text-xs text-destructive hover:underline ml-auto">
+              Limpar manuais
+            </button>
+          </>
         )}
       </div>
       <table className="w-full text-sm">

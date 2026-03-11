@@ -225,7 +225,7 @@
     "codigo": "RV-04",
     "descricao": "Reboco interno",
     "unidade": "m²",
-    "qtd_expr": "areaParedeExternaLiquida + areaParedeInterna2Faces - areaRevestimentoCeramicoParede",
+    "qtd_expr": "areaParedeExternaLiquida + areaParedeInterna2Faces + areaExtraParedesPDduplo - areaRevestimentoCeramicoParede",
     "inclui_material": true,
     "inclui_mo": true
   },
