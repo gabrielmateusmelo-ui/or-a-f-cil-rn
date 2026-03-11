@@ -381,10 +381,15 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     else if (pdLocal === 'COZINHA') areaPDduplo = comodos.cozinha.areaTotal_m2;
     else if (pdLocal === 'SALA_E_COZINHA') areaPDduplo = comodos.sala.areaTotal_m2 + comodos.jantar.areaTotal_m2 + comodos.cozinha.areaTotal_m2;
   }
+  const sugestaoAlturaPD = inputs.peDireito_m + 1.2;
   const alturaPD = inputs.alturaPeDireitoDuplo_m || 0;
   const deltaH = Math.max(0, alturaPD - inputs.peDireito_m);
   const perimPD = areaPDduplo > 0 ? 4 * Math.sqrt(areaPDduplo) : 0;
   const areaExtraParedesPDduplo = perimPD * deltaH;
+  let pdDuploAviso = '';
+  if (pdLocal !== 'NENHUM' && alturaPD > 0 && alturaPD <= inputs.peDireito_m) {
+    pdDuploAviso = 'Altura do PD duplo deve ser maior que o pé-direito padrão.';
+  }
 
   // === Cobertura ===
   const fatorTelhado = inputs.tipoCobertura === 'laje impermeabilizada' ? 1.0 : 1.15;
