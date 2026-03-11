@@ -125,12 +125,15 @@ const Index = () => {
     () => calcTotals(result, materials, labor, bdiRate, area, 'BASELINE'),
     [result, materials, labor, bdiRate, area]
   );
+
+  const hasDynOverrides = hasManualOverrides(inputs);
+
+  // If no manual overrides, dynamic = baseline (Δ = 0)
   const summaryDinamico = useMemo(
-    () => calcTotals(result, materials, labor, bdiRate, area, 'DINAMICO'),
-    [result, materials, labor, bdiRate, area]
+    () => hasDynOverrides ? calcTotals(result, materials, labor, bdiRate, area, 'DINAMICO') : summaryBaseline,
+    [result, materials, labor, bdiRate, area, hasDynOverrides, summaryBaseline]
   );
 
-  const hasDynOverrides = hasOverrides(inputs);
   const effectiveModo = hasDynOverrides ? modoTotal : 'BASELINE';
 
   const tipoCasaLabel = inputs.tipoCasa === 'TERREA_SUBSOLO_1PAV' ? 'Térrea + Subsolo + 1 Pav.'
