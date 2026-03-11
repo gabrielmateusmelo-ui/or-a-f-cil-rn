@@ -74,7 +74,8 @@ function TableHead({ mode }: { mode: 'com' | 'sem' }) {
   );
 }
 
-export default function ServicesTable({ items, byGroup, hideZero, search, mode }: Props) {
+export default function ServicesTable({ items, byGroup, hideZero, search, mode, bdiRate = 0 }: Props) {
+  const hideBdi = bdiRate === 0;
   const [viewMode, setViewMode] = useState<'flat' | 'group'>('group');
 
   const filtered = useMemo(() => {
