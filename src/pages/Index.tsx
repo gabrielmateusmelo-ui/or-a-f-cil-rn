@@ -36,11 +36,12 @@ function deepMerge(target: any, source: any): any {
   return result;
 }
 
-function hasOverrides(inputs: ProjectInputs): boolean {
+function hasManualOverrides(inputs: ProjectInputs): boolean {
   const precos: PrecosInputs = inputs.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
-  if (precos.usarPrecosInsumos && Object.keys(precos.insumos).length > 0) return true;
-  if (precos.usarPrecosMaoObraHH && Object.keys(precos.maoObraHH).length > 0) return true;
-  return false;
+  // Only count as override if there are actual manual values (not just the flag)
+  const hasInsumoOverrides = Object.values(precos.insumos).some(v => v !== undefined && v !== null);
+  const hasHHOverrides = Object.values(precos.maoObraHH).some(v => v !== undefined && v !== null);
+  return hasInsumoOverrides || hasHHOverrides;
 }
 
 function buildLaborRolesFromOverrides(inputs: ProjectInputs): Record<string, LaborRole> | undefined {
@@ -124,12 +125,15 @@ const Index = () => {
     () => calcTotals(result, materials, labor, bdiRate, area, 'BASELINE'),
     [result, materials, labor, bdiRate, area]
   );
+
+  const hasDynOverrides = hasManualOverrides(inputs);
+
+  // If no manual overrides, dynamic = baseline (Δ = 0)
   const summaryDinamico = useMemo(
-    () => calcTotals(result, materials, labor, bdiRate, area, 'DINAMICO'),
-    [result, materials, labor, bdiRate, area]
+    () => hasDynOverrides ? calcTotals(result, materials, labor, bdiRate, area, 'DINAMICO') : summaryBaseline,
+    [result, materials, labor, bdiRate, area, hasDynOverrides, summaryBaseline]
   );
 
-  const hasDynOverrides = hasOverrides(inputs);
   const effectiveModo = hasDynOverrides ? modoTotal : 'BASELINE';
 
   const tipoCasaLabel = inputs.tipoCasa === 'TERREA_SUBSOLO_1PAV' ? 'Térrea + Subsolo + 1 Pav.'
@@ -203,8 +207,8 @@ const Index = () => {
             </div>
 
             <div className="bg-card rounded-lg border border-border p-1">
-              {activeTab === 'com' && <ServicesTable items={result.items} byGroup={result.byGroup} hideZero={hideZero} search={search} mode="com" />}
-              {activeTab === 'sem' && <ServicesTable items={result.items} byGroup={result.byGroup} hideZero={hideZero} search={search} mode="sem" />}
+              {activeTab === 'com' && <ServicesTable items={result.items} byGroup={result.byGroup} hideZero={hideZero} search={search} mode="com" bdiRate={bdiRate} />}
+              {activeTab === 'sem' && <ServicesTable items={result.items} byGroup={result.byGroup} hideZero={hideZero} search={search} mode="sem" bdiRate={bdiRate} />}
               {activeTab === 'materiais' && (
                 <MaterialsTable
                   materials={materials}

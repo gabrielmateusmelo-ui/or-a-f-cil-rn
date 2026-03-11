@@ -343,11 +343,16 @@ export default function ParamsForm({ inputs, onChange }: Props) {
         />
         {pdLocal !== 'NENHUM' && (
           <>
-            <InputField label="Altura PD duplo" value={inputs.alturaPeDireitoDuplo_m || 0} onChange={(v) => set('alturaPeDireitoDuplo_m', v)} suffix="m" step={0.1}
+            <InputField label="Altura PD duplo" value={inputs.alturaPeDireitoDuplo_m || derived.sugestaoAlturaPD} onChange={(v) => set('alturaPeDireitoDuplo_m', v)} suffix="m" step={0.1}
               help="Altura total do pé-direito duplo (m). A diferença em relação ao PD padrão gera área extra." />
             <InputField label="Área PD (0=auto)" value={inputs.areaPeDireitoDuplo_m2 || 0} onChange={(v) => set('areaPeDireitoDuplo_m2', v)} suffix="m²"
               help="Área em planta do PD duplo. Se 0, usa a área dos cômodos selecionados." />
             <InputField label="Área PD (calc.)" value={derived.areaExtraParedesPDduplo.toFixed(1)} onChange={() => {}} suffix="m² extra" readOnly fullSpan />
+            {derived.pdDuploAviso && (
+              <div className="col-span-2 text-[10px] text-destructive bg-destructive/10 px-2 py-1 rounded">
+                ⚠ {derived.pdDuploAviso}
+              </div>
+            )}
           </>
         )}
         <SelectField label="Pintura externa" value={inputs.tipoPinturaExterna} onChange={(v) => set('tipoPinturaExterna', v as any)} fullSpan

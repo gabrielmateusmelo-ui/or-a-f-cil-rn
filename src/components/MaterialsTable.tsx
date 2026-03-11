@@ -12,6 +12,8 @@ interface Props {
   onToggleUsarPrecos: (v: boolean) => void;
 }
 
+type FilterMode = 'all' | 'manual';
+
 function fmt(v: number) {
   return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -26,11 +28,18 @@ function parseNum(s: string): number | null {
 }
 
 export default function MaterialsTable({ materials, search, overrides, onOverrideChange, onClearAll, usarPrecos, onToggleUsarPrecos }: Props) {
+  const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const filtered = useMemo(() => {
-    if (!search) return materials;
-    const q = search.toLowerCase();
-    return materials.filter((m) => m.descricao.toLowerCase().includes(q) || m.categoria.toLowerCase().includes(q));
-  }, [materials, search]);
+    let list = materials;
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter((m) => m.descricao.toLowerCase().includes(q) || m.categoria.toLowerCase().includes(q));
+    }
+    if (filterMode === 'manual') {
+      list = list.filter((m) => m.sinapiKey && overrides[m.sinapiKey] !== undefined);
+    }
+    return list;
+  }, [materials, search, filterMode, overrides]);
 
   const totalCusto = useMemo(() => filtered.reduce((s, m) => s + m.custoTotal, 0), [filtered]);
   const hasAnyOverride = Object.keys(overrides).length > 0;
@@ -43,9 +52,15 @@ export default function MaterialsTable({ materials, search, overrides, onOverrid
           Usar preços de insumos no orçamento
         </label>
         {hasAnyOverride && (
-          <button onClick={onClearAll} className="text-xs text-destructive hover:underline ml-auto">
-            Limpar manuais
-          </button>
+          <>
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer">
+              <input type="checkbox" checked={filterMode === 'manual'} onChange={(e) => setFilterMode(e.target.checked ? 'manual' : 'all')} className="rounded border-input" />
+              Somente manuais
+            </label>
+            <button onClick={onClearAll} className="text-xs text-destructive hover:underline ml-auto">
+              Limpar manuais
+            </button>
+          </>
         )}
       </div>
       <table className="w-full text-sm">

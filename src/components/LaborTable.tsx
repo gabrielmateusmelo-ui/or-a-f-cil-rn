@@ -28,7 +28,11 @@ interface Props {
 }
 
 export default function LaborTable({ labor, overrides, onOverrideChange, onClearAll, usarHH, onToggleUsarHH }: Props) {
-  const activeLab = labor.filter(l => l.hhTotal > 0);
+  const [filterManual, setFilterManual] = useState(false);
+  let activeLab = labor.filter(l => l.hhTotal > 0);
+  if (filterManual) {
+    activeLab = activeLab.filter(l => overrides[l.funcao] !== undefined);
+  }
   const totalHH = activeLab.reduce((s, l) => s + l.hhTotal, 0);
   const totalCusto = activeLab.reduce((s, l) => s + l.custoTotal, 0);
   const totalHD = activeLab.reduce((s, l) => s + l.homemDia, 0);
@@ -42,9 +46,15 @@ export default function LaborTable({ labor, overrides, onOverrideChange, onClear
           Usar custos HH no orçamento (mão de obra)
         </label>
         {hasAnyOverride && (
-          <button onClick={onClearAll} className="text-xs text-destructive hover:underline ml-auto">
-            Limpar manuais
-          </button>
+          <>
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer">
+              <input type="checkbox" checked={filterManual} onChange={(e) => setFilterManual(e.target.checked)} className="rounded border-input" />
+              Somente manuais
+            </label>
+            <button onClick={onClearAll} className="text-xs text-destructive hover:underline ml-auto">
+              Limpar manuais
+            </button>
+          </>
         )}
       </div>
       <table className="w-full text-sm">
