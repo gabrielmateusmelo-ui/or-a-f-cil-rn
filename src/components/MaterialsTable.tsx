@@ -36,7 +36,7 @@ export default function MaterialsTable({ materials, search, overrides, onOverrid
       list = list.filter((m) => m.descricao.toLowerCase().includes(q) || m.categoria.toLowerCase().includes(q));
     }
     if (filterMode === 'manual') {
-      list = list.filter((m) => m.sinapiKey && overrides[m.sinapiKey] !== undefined);
+      list = list.filter((m) => overrides[m.materialId] !== undefined);
     }
     return list;
   }, [materials, search, filterMode, overrides]);
