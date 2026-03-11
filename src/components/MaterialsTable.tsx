@@ -6,7 +6,7 @@ interface Props {
   materials: MaterialLine[];
   search: string;
   overrides: Record<string, number>;
-  onOverrideChange: (sinapiKey: string, value: number | null) => void;
+  onOverrideChange: (materialId: string, value: number | null) => void;
   onClearAll: () => void;
   usarPrecos: boolean;
   onToggleUsarPrecos: (v: boolean) => void;
