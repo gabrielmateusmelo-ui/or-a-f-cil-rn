@@ -12,6 +12,8 @@ interface Props {
   onToggleUsarPrecos: (v: boolean) => void;
 }
 
+type FilterMode = 'all' | 'manual';
+
 function fmt(v: number) {
   return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
