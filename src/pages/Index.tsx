@@ -36,11 +36,12 @@ function deepMerge(target: any, source: any): any {
   return result;
 }
 
-function hasOverrides(inputs: ProjectInputs): boolean {
+function hasManualOverrides(inputs: ProjectInputs): boolean {
   const precos: PrecosInputs = inputs.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
-  if (precos.usarPrecosInsumos && Object.keys(precos.insumos).length > 0) return true;
-  if (precos.usarPrecosMaoObraHH && Object.keys(precos.maoObraHH).length > 0) return true;
-  return false;
+  // Only count as override if there are actual manual values (not just the flag)
+  const hasInsumoOverrides = Object.values(precos.insumos).some(v => v !== undefined && v !== null);
+  const hasHHOverrides = Object.values(precos.maoObraHH).some(v => v !== undefined && v !== null);
+  return hasInsumoOverrides || hasHHOverrides;
 }
 
 function buildLaborRolesFromOverrides(inputs: ProjectInputs): Record<string, LaborRole> | undefined {
