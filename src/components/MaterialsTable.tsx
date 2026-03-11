@@ -81,14 +81,14 @@ export default function MaterialsTable({ materials, search, overrides, onOverrid
           </tr>
         </thead>
         <tbody>
-          {filtered.map((m, i) => {
-            const hasManual = m.sinapiKey && overrides[m.sinapiKey] !== undefined;
-            const manualVal = hasManual ? overrides[m.sinapiKey] : null;
+          {filtered.map((m) => {
+            const hasManual = overrides[m.materialId] !== undefined;
+            const manualVal = hasManual ? overrides[m.materialId] : null;
             const efetivo = manualVal ?? m.precoBase;
             const delta = m.precoBase > 0 ? ((efetivo / m.precoBase) - 1) * 100 : null;
 
             return (
-              <tr key={`${m.materialId}-${m.unidade}-${i}`} className={`border-b border-border/50 hover:bg-muted/50 transition-colors ${hasManual ? 'bg-accent/20' : ''}`}>
+              <tr key={m.materialId} className={`border-b border-border/50 hover:bg-muted/50 transition-colors ${hasManual ? 'bg-accent/20' : ''}`}>
                 <td className="py-1.5 px-2">
                   {m.descricao}
                   {hasManual && <span className="ml-1 text-[9px] bg-primary/20 text-primary px-1 rounded">Manual</span>}
@@ -97,12 +97,10 @@ export default function MaterialsTable({ materials, search, overrides, onOverrid
                 <td className="py-1.5 px-2 text-right font-mono">{fmt(m.quantidade)}</td>
                 <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">{m.precoBase > 0 ? fmt(m.precoBase) : '—'}</td>
                 <td className="py-1.5 px-1">
-                  {m.sinapiKey ? (
-                    <ManualInput
-                      value={manualVal}
-                      onChange={(v) => onOverrideChange(m.sinapiKey, v)}
-                    />
-                  ) : <span className="text-muted-foreground text-xs text-center block">—</span>}
+                  <ManualInput
+                    value={manualVal}
+                    onChange={(v) => onOverrideChange(m.materialId, v)}
+                  />
                 </td>
                 <td className="py-1.5 px-2 text-right font-mono font-medium">{efetivo > 0 ? fmt(efetivo) : '—'}</td>
                 <td className="py-1.5 px-2 text-right font-mono font-medium">{m.custoTotal > 0 ? fmtCur(m.custoTotal) : '—'}</td>

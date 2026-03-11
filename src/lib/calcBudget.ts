@@ -82,6 +82,8 @@ const materialIdToSinapiKey: Record<string, string> = {
 };
 
 function getInsumoPrice(materialId: string, precos: PrecosInputs): number | null {
+  // Check override by materialId first
+  if (precos.insumos[materialId] !== undefined) return precos.insumos[materialId];
   const sinapiKey = materialIdToSinapiKey[materialId];
   if (!sinapiKey) return null;
   if (precos.insumos[sinapiKey] !== undefined) return precos.insumos[sinapiKey];

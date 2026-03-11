@@ -64,6 +64,8 @@ function getBasePrice(materialId: string): number {
 }
 
 function getInsumoPrice(materialId: string, precos: PrecosInputs): number {
+  // Check override by materialId first (per-material granularity)
+  if (precos.insumos[materialId] !== undefined) return precos.insumos[materialId];
   const sinapiKey = materialIdToSinapiKey[materialId];
   if (!sinapiKey) return 0;
   if (precos.insumos[sinapiKey] !== undefined) return precos.insumos[sinapiKey];

@@ -128,11 +128,47 @@ const Index = () => {
 
   const hasDynOverrides = hasManualOverrides(inputs);
 
-  // If no manual overrides, dynamic = baseline (Δ = 0)
-  const summaryDinamico = useMemo(
-    () => hasDynOverrides ? calcTotals(result, materials, labor, bdiRate, area, 'DINAMICO') : summaryBaseline,
-    [result, materials, labor, bdiRate, area, hasDynOverrides, summaryBaseline]
-  );
+  // Delta-based dynamic: Reference + only the deltas from manual overrides
+  const summaryDinamico = useMemo(() => {
+    if (!hasDynOverrides) return summaryBaseline;
+
+    const matOverrides = precos.insumos;
+    let materialDelta = 0;
+    for (const m of materials) {
+      if (matOverrides[m.materialId] !== undefined) {
+        const manual = matOverrides[m.materialId];
+        materialDelta += m.quantidade * (manual - m.precoBase);
+      }
+    }
+
+    const moOverrides = precos.maoObraHH;
+    const moBaselineData = sinapiBaseline.maoObraHH as Record<string, { value: number }>;
+    let laborDelta = 0;
+    for (const l of labor) {
+      if (moOverrides[l.funcao] !== undefined) {
+        const base = moBaselineData[l.funcao]?.value ?? l.custoHH;
+        const manual = moOverrides[l.funcao];
+        laborDelta += l.hhTotal * (manual - base);
+      }
+    }
+
+    const refSubtotal = summaryBaseline.subtotalDireto;
+    const dynSubtotal = refSubtotal + materialDelta + laborDelta;
+    const bdiValorDyn = dynSubtotal * bdiRate;
+    const totalFinalDyn = dynSubtotal + bdiValorDyn;
+
+    return {
+      subtotalDireto: dynSubtotal,
+      totalMateriais: summaryBaseline.totalMateriais + materialDelta,
+      totalMaoObra: summaryBaseline.totalMaoObra + laborDelta,
+      bdiRate,
+      bdiValor: bdiValorDyn,
+      totalFinal: totalFinalDyn,
+      valorM2: area > 0 ? totalFinalDyn / area : 0,
+      fonte: 'DINAMICO' as const,
+      avisos: [] as string[],
+    };
+  }, [summaryBaseline, materials, labor, precos, bdiRate, area, hasDynOverrides]);
 
   const effectiveModo = hasDynOverrides ? modoTotal : 'BASELINE';
 

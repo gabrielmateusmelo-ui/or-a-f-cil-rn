@@ -332,7 +332,13 @@ export default function ParamsForm({ inputs, onChange }: Props) {
       </Section>
 
       <Section title="🔧 Avançado">
-        <SelectField label="PD duplo – local" value={pdLocal} onChange={(v) => set('peDireitoDuploLocal', v as any)} fullSpan
+        <SelectField label="PD duplo – local" value={pdLocal} onChange={(v) => {
+            set('peDireitoDuploLocal', v as any);
+            // Auto-set height if not yet defined
+            if (v !== 'NENHUM' && (!inputs.alturaPeDireitoDuplo_m || inputs.alturaPeDireitoDuplo_m <= inputs.peDireito_m)) {
+              set('alturaPeDireitoDuplo_m', inputs.peDireito_m + 1.2);
+            }
+          }} fullSpan
           help="Onde há pé-direito duplo. Adiciona área extra de parede para pintura/revestimento."
           options={[
             { value: 'NENHUM', label: 'Nenhum' },
