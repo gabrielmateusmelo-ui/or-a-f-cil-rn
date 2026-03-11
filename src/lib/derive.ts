@@ -477,7 +477,7 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     fatorFaceReboco: 0, fatorFacePintura: 0,
     areaPiscina, perimetroPiscina, volumePiscina, areaRevestPiscina,
     temPiscina, casaMaquinas,
-    areaExtraParedesPDduplo, isPinturaAcrilica, isPinturaTextura,
+    areaExtraParedesPDduplo, isPinturaAcrilica, isPinturaTextura, pdDuploAviso, pdDuploDeltaH: deltaH, pdDuploPerimetroAprox: perimPD, sugestaoAlturaPD,
     perimetro: perimetroExterno,
     areaParede: areaParedeExternaLiquida,
     areaParedeInterna: areaParedeInterna2Faces,
