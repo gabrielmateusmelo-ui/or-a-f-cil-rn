@@ -28,11 +28,18 @@ function parseNum(s: string): number | null {
 }
 
 export default function MaterialsTable({ materials, search, overrides, onOverrideChange, onClearAll, usarPrecos, onToggleUsarPrecos }: Props) {
+  const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const filtered = useMemo(() => {
-    if (!search) return materials;
-    const q = search.toLowerCase();
-    return materials.filter((m) => m.descricao.toLowerCase().includes(q) || m.categoria.toLowerCase().includes(q));
-  }, [materials, search]);
+    let list = materials;
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter((m) => m.descricao.toLowerCase().includes(q) || m.categoria.toLowerCase().includes(q));
+    }
+    if (filterMode === 'manual') {
+      list = list.filter((m) => m.sinapiKey && overrides[m.sinapiKey] !== undefined);
+    }
+    return list;
+  }, [materials, search, filterMode, overrides]);
 
   const totalCusto = useMemo(() => filtered.reduce((s, m) => s + m.custoTotal, 0), [filtered]);
   const hasAnyOverride = Object.keys(overrides).length > 0;
