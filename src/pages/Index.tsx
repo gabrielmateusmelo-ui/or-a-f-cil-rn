@@ -75,15 +75,15 @@ const Index = () => {
     setInputs(prev => ({ ...prev, precos: { ...(prev.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} }), ...p } }));
   }, []);
 
-  // Material override handlers
-  const handleMaterialOverride = useCallback((sinapiKey: string, value: number | null) => {
+  // Material override handlers (keyed by materialId, not sinapiKey)
+  const handleMaterialOverride = useCallback((materialId: string, value: number | null) => {
     setInputs(prev => {
       const cur = prev.precos ?? { usarPrecosInsumos: false, usarPrecosMaoObraHH: false, insumos: {}, maoObraHH: {} };
       const newInsumos = { ...cur.insumos };
       if (value === null) {
-        delete newInsumos[sinapiKey];
+        delete newInsumos[materialId];
       } else {
-        newInsumos[sinapiKey] = value;
+        newInsumos[materialId] = value;
       }
       return { ...prev, precos: { ...cur, insumos: newInsumos, usarPrecosInsumos: true } };
     });
