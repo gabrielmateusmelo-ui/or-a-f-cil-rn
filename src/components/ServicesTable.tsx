@@ -8,6 +8,7 @@ interface Props {
   hideZero: boolean;
   search: string;
   mode: 'com' | 'sem';
+  bdiRate?: number;
 }
 
 function fmt(v: number) {
