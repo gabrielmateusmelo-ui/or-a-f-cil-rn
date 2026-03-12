@@ -34,8 +34,15 @@ export default function LaborTable({ labor, overrides, onOverrideChange, onClear
     activeLab = activeLab.filter(l => overrides[l.funcao] !== undefined);
   }
   const totalHH = activeLab.reduce((s, l) => s + l.hhTotal, 0);
-  const totalCusto = activeLab.reduce((s, l) => s + l.custoTotal, 0);
-  const totalHD = activeLab.reduce((s, l) => s + l.homemDia, 0);
+  const totalHD = activeLab.reduce((s, l) => s + l.hhTotal / 8, 0);
+  // Compute total cost using effective rates (base or manual override)
+  const totalCusto = activeLab.reduce((s, l) => {
+    const baseEntry = moBaseline[l.funcao];
+    const base = baseEntry?.value ?? l.custoHH;
+    const manual = overrides[l.funcao];
+    const efetivo = manual !== undefined ? manual : base;
+    return s + l.hhTotal * efetivo;
+  }, 0);
   const hasAnyOverride = Object.keys(overrides).length > 0;
 
   return (
@@ -83,6 +90,10 @@ export default function LaborTable({ labor, overrides, onOverrideChange, onClear
             const efetivo = manualVal ?? base;
             const delta = base > 0 ? ((efetivo / base) - 1) * 100 : null;
 
+            // HH is always BASE (fixed). Cost uses effective rate.
+            const custoEfetivo = l.hhTotal * efetivo;
+            const homemDiaVal = l.hhTotal / 8;
+
             return (
               <tr key={l.funcao} className={`border-b border-border/50 hover:bg-muted/50 transition-colors ${hasManual ? 'bg-accent/20' : ''}`}>
                 <td className="py-1.5 px-2 font-medium">
@@ -95,8 +106,8 @@ export default function LaborTable({ labor, overrides, onOverrideChange, onClear
                   <ManualInput value={manualVal} onChange={(v) => onOverrideChange(l.funcao, v)} />
                 </td>
                 <td className="py-1.5 px-2 text-right font-mono font-medium">{fmt(efetivo)}</td>
-                <td className="py-1.5 px-2 text-right font-mono">{fmt(l.homemDia)}</td>
-                <td className="py-1.5 px-2 text-right font-mono font-semibold">{fmtCur(l.custoTotal)}</td>
+                <td className="py-1.5 px-2 text-right font-mono">{fmt(homemDiaVal)}</td>
+                <td className="py-1.5 px-2 text-right font-mono font-semibold">{fmtCur(custoEfetivo)}</td>
                 <td className="py-1.5 px-2 text-right font-mono text-xs">
                   {delta !== null && delta !== 0 ? (
                     <span className={delta > 0 ? 'text-destructive' : 'text-green-600'}>{delta > 0 ? '+' : ''}{delta.toFixed(1)}%</span>

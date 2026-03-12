@@ -115,8 +115,8 @@ const Index = () => {
   const result = useMemo(() => calcBudget(inputs, derived), [inputs, derived]);
   const materials = useMemo(() => calcMaterials(result.items, inputs), [result.items, inputs]);
 
-  const laborRolesOverride = useMemo(() => buildLaborRolesFromOverrides(inputs), [inputs]);
-  const labor = useMemo(() => calcLabor(result.items, laborRolesOverride), [result.items, laborRolesOverride]);
+  // Labor always computed with BASE rates — HH is fixed regardless of overrides
+  const labor = useMemo(() => calcLabor(result.items), [result.items]);
 
   const bdiRate = result.bdiPct;
   const area = derived.areaConstruida;
