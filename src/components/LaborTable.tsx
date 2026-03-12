@@ -34,8 +34,15 @@ export default function LaborTable({ labor, overrides, onOverrideChange, onClear
     activeLab = activeLab.filter(l => overrides[l.funcao] !== undefined);
   }
   const totalHH = activeLab.reduce((s, l) => s + l.hhTotal, 0);
-  const totalCusto = activeLab.reduce((s, l) => s + l.custoTotal, 0);
-  const totalHD = activeLab.reduce((s, l) => s + l.homemDia, 0);
+  const totalHD = activeLab.reduce((s, l) => s + l.hhTotal / 8, 0);
+  // Compute total cost using effective rates (base or manual override)
+  const totalCusto = activeLab.reduce((s, l) => {
+    const baseEntry = moBaseline[l.funcao];
+    const base = baseEntry?.value ?? l.custoHH;
+    const manual = overrides[l.funcao];
+    const efetivo = manual !== undefined ? manual : base;
+    return s + l.hhTotal * efetivo;
+  }, 0);
   const hasAnyOverride = Object.keys(overrides).length > 0;
 
   return (
