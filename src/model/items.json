@@ -558,5 +558,85 @@
     "qtd_expr": "casaMaquinas * temPiscina",
     "inclui_material": true,
     "inclui_mo": true
+  },
+  {
+    "id": "terrap_terraplenagem",
+    "grupo": "Serviços Preliminares",
+    "codigo": "SP-03",
+    "descricao": "Terraplenagem (corte/aterro)",
+    "unidade": "m²",
+    "qtd_expr": "max(areaImplantacao_m2 * (fatorTerreno - 1), 0)",
+    "inclui_material": false,
+    "inclui_mo": true
+  },
+  {
+    "id": "cob_rufos_calhas",
+    "grupo": "Cobertura",
+    "codigo": "CB-05",
+    "descricao": "Rufos e calhas (telhado embutido)",
+    "unidade": "m",
+    "qtd_expr": "perimetroExterno * isEmbutido",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "cob_platibanda_reboco",
+    "grupo": "Cobertura",
+    "codigo": "CB-06",
+    "descricao": "Reboco de platibanda (telhado embutido)",
+    "unidade": "m²",
+    "qtd_expr": "(perimetroExterno * 0.60) * isEmbutido",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "ext_grama",
+    "grupo": "Externos",
+    "codigo": "EX-01",
+    "descricao": "Grama em placas (área externa)",
+    "unidade": "m²",
+    "qtd_expr": "areaExternaGrama",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "ext_piso_externo",
+    "grupo": "Externos",
+    "codigo": "EX-02",
+    "descricao": "Piso externo (área externa)",
+    "unidade": "m²",
+    "qtd_expr": "areaExternaPiso",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "ext_garagem_extra_piso",
+    "grupo": "Externos",
+    "codigo": "EX-03",
+    "descricao": "Piso garagem extra (fora da área construída)",
+    "unidade": "m²",
+    "qtd_expr": "areaGaragemExtra",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "gesso_sancas",
+    "grupo": "Acabamentos",
+    "codigo": "AC-01",
+    "descricao": "Gesso / sancas decorativas",
+    "unidade": "m²",
+    "qtd_expr": "areaGessoSancas",
+    "inclui_material": true,
+    "inclui_mo": true
+  },
+  {
+    "id": "sauna_pacote",
+    "grupo": "Acabamentos",
+    "codigo": "AC-02",
+    "descricao": "Sauna (pacote completo)",
+    "unidade": "m²",
+    "qtd_expr": "areaSauna",
+    "inclui_material": true,
+    "inclui_mo": true
   }
 ]

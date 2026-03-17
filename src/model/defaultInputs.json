@@ -95,6 +95,13 @@
     "servico_m": 1.5,
     "gourmet_m": 1.2
   },
+  "terrenoTipo": "PLANO",
+  "telhadoEstilo": "APARENTE",
+  "areaExternaGrama_m2": 0,
+  "areaExternaPiso_m2": 0,
+  "areaGaragemExtra_m2": 0,
+  "areaGessoSancas_m2": 0,
+  "areaSauna_m2": 0,
   "precos": {
     "usarPrecosInsumos": false,
     "usarPrecosMaoObraHH": false,

@@ -185,5 +185,25 @@
   "inst_hidraulica_ponto": [
     { "materialId": "tubo_pvc", "descricao": "Tubo PVC", "unidade": "m", "coef_por_unidade_servico": 6, "categoria": "outros" },
     { "materialId": "conexoes_pvc", "descricao": "Conexões PVC", "unidade": "un", "coef_por_unidade_servico": 4, "categoria": "outros" }
+  ],
+  "ext_piso_externo": [
+    { "materialId": "piso_ext_m2", "descricao": "Piso externo", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "ceramica" },
+    { "materialId": "arg_colante_ext", "descricao": "Argamassa colante", "unidade": "kg", "coef_por_unidade_servico": 5, "categoria": "argamassa" },
+    { "materialId": "rejunte_ext", "descricao": "Rejunte", "unidade": "kg", "coef_por_unidade_servico": 0.5, "categoria": "ceramica" }
+  ],
+  "ext_garagem_extra_piso": [
+    { "materialId": "piso_ext_m2", "descricao": "Piso externo", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "ceramica" },
+    { "materialId": "arg_colante_ext", "descricao": "Argamassa colante", "unidade": "kg", "coef_por_unidade_servico": 5, "categoria": "argamassa" },
+    { "materialId": "rejunte_ext", "descricao": "Rejunte", "unidade": "kg", "coef_por_unidade_servico": 0.5, "categoria": "ceramica" }
+  ],
+  "cob_rufos_calhas": [
+    { "materialId": "rufo_calha", "descricao": "Rufo/calha galvanizada", "unidade": "m", "coef_por_unidade_servico": 1, "categoria": "cobertura" }
+  ],
+  "cob_platibanda_reboco": [
+    { "materialId": "arg_reboco_platib", "descricao": "Argamassa de reboco", "unidade": "kg", "coef_por_unidade_servico": 20, "categoria": "argamassa" }
+  ],
+  "gesso_sancas": [
+    { "materialId": "gesso_placa", "descricao": "Placa de gesso", "unidade": "m²", "coef_por_unidade_servico": 1, "categoria": "outros" },
+    { "materialId": "perfil_met_gesso", "descricao": "Perfil metálico", "unidade": "m", "coef_por_unidade_servico": 0.6, "categoria": "outros" }
   ]
 }
