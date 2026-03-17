@@ -284,6 +284,14 @@ export default function ParamsForm({ inputs, onChange }: Props) {
             { value: 'laje impermeabilizada', label: 'Laje impermeabilizada' },
           ]}
         />
+        <SelectField label="Estilo do telhado" value={inputs.telhadoEstilo || 'APARENTE'} onChange={(v) => set('telhadoEstilo', v as any)}
+          help="Aparente: telhado visível. Embutido: com platibanda, rufos e calhas. Laje: cobertura em laje."
+          options={[
+            { value: 'APARENTE', label: 'Aparente' },
+            { value: 'EMBUTIDO', label: 'Embutido (platibanda)' },
+            { value: 'LAJE', label: 'Laje' },
+          ]}
+        />
         <SelectField label="Tipo de forro" value={inputs.forroTipo || 'PVC'} onChange={(v) => set('forroTipo', v as any)}
           help="Tipo de forro. Afeta custo e material da cobertura interna. SEM_FORRO zera esse item."
           options={[
