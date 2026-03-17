@@ -166,7 +166,6 @@ export interface DerivedVars {
   isCeram: number;
   isLaje: number;
   isTelhado: number;
-  // Forro flags
   isForroPVC: number;
   isForroGesso: number;
   isForroDrywall: number;
@@ -197,7 +196,6 @@ export interface DerivedVars {
   areaRevestimentoCeramico: number;
   fatorFaceReboco: number;
   fatorFacePintura: number;
-  // Pavimentos
   areaTerreo_m2: number;
   areaSubsolo_m2_eff: number;
   areaPavSuperior_m2_eff: number;
@@ -207,17 +205,22 @@ export interface DerivedVars {
   temPavSuperior: number;
   subsoloAcabado: number;
   alturaSubsolo_m: number;
-  // Escadas
   qtdEscadasEfetiva: number;
-  // Instalações por pontos
   pontosEletricos: number;
   pontosHidraulicos: number;
-  // Soma cômodos
   somaAreasComodos: number;
   pdDuploAviso: string;
   pdDuploDeltaH: number;
   pdDuploPerimetroAprox: number;
   sugestaoAlturaPD: number;
+  // New vars
+  fatorTerreno: number;
+  isEmbutido: number;
+  areaExternaGrama: number;
+  areaExternaPiso: number;
+  areaGaragemExtra: number;
+  areaGessoSancas: number;
+  areaSauna: number;
   [key: string]: number | string;
 }
 
