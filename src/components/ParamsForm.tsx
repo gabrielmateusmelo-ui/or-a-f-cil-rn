@@ -284,6 +284,14 @@ export default function ParamsForm({ inputs, onChange }: Props) {
             { value: 'laje impermeabilizada', label: 'Laje impermeabilizada' },
           ]}
         />
+        <SelectField label="Estilo do telhado" value={inputs.telhadoEstilo || 'APARENTE'} onChange={(v) => set('telhadoEstilo', v as any)}
+          help="Aparente: telhado visível. Embutido: com platibanda, rufos e calhas. Laje: cobertura em laje."
+          options={[
+            { value: 'APARENTE', label: 'Aparente' },
+            { value: 'EMBUTIDO', label: 'Embutido (platibanda)' },
+            { value: 'LAJE', label: 'Laje' },
+          ]}
+        />
         <SelectField label="Tipo de forro" value={inputs.forroTipo || 'PVC'} onChange={(v) => set('forroTipo', v as any)}
           help="Tipo de forro. Afeta custo e material da cobertura interna. SEM_FORRO zera esse item."
           options={[
@@ -368,6 +376,30 @@ export default function ParamsForm({ inputs, onChange }: Props) {
             { value: 'TEXTURA', label: 'Textura' },
           ]}
         />
+      </Section>
+
+      <Section title="🌿 Terreno e Externos">
+        <SelectField label="Tipo de terreno" value={inputs.terrenoTipo || 'PLANO'} onChange={(v) => set('terrenoTipo', v as any)} fullSpan
+          help="Terreno plano = sem custo extra. Aclive/declive geram terraplenagem adicional."
+          options={[
+            { value: 'PLANO', label: 'Plano' },
+            { value: 'ACLIVE', label: 'Aclive (+15%)' },
+            { value: 'DECLIVE', label: 'Declive (+20%)' },
+          ]}
+        />
+        <InputField label="Grama externa" value={inputs.areaExternaGrama_m2 || 0} onChange={(v) => set('areaExternaGrama_m2', v)} suffix="m²"
+          help="Área de grama em placas na área externa (m²)." />
+        <InputField label="Piso externo" value={inputs.areaExternaPiso_m2 || 0} onChange={(v) => set('areaExternaPiso_m2', v)} suffix="m²"
+          help="Área de piso na área externa (m²)." />
+        <InputField label="Garagem extra" value={inputs.areaGaragemExtra_m2 || 0} onChange={(v) => set('areaGaragemExtra_m2', v)} suffix="m²"
+          help="Piso de garagem fora da área construída (m²)." />
+      </Section>
+
+      <Section title="✨ Extras">
+        <InputField label="Gesso / sancas" value={inputs.areaGessoSancas_m2 || 0} onChange={(v) => set('areaGessoSancas_m2', v)} suffix="m²"
+          help="Área de gesso decorativo / sancas (m²)." />
+        <InputField label="Sauna" value={inputs.areaSauna_m2 || 0} onChange={(v) => set('areaSauna_m2', v)} suffix="m²"
+          help="Área da sauna (m²). Pacote completo (estrutura + equipamento)." />
       </Section>
 
       <Section title="📊 Áreas Calculadas">

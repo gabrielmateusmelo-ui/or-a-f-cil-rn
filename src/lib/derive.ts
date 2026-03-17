@@ -129,6 +129,13 @@ export interface ProjectInputs {
   tipoPinturaExterna: 'ACRILICA' | 'TEXTURA';
   forroTipo: 'PVC' | 'GESSO' | 'DRYWALL' | 'SEM_FORRO';
   revestAltura: RevestAlturaInputs;
+  terrenoTipo: 'PLANO' | 'ACLIVE' | 'DECLIVE';
+  telhadoEstilo: 'APARENTE' | 'EMBUTIDO' | 'LAJE';
+  areaExternaGrama_m2: number;
+  areaExternaPiso_m2: number;
+  areaGaragemExtra_m2: number;
+  areaGessoSancas_m2: number;
+  areaSauna_m2: number;
   precos: PrecosInputs;
 }
 
@@ -159,7 +166,6 @@ export interface DerivedVars {
   isCeram: number;
   isLaje: number;
   isTelhado: number;
-  // Forro flags
   isForroPVC: number;
   isForroGesso: number;
   isForroDrywall: number;
@@ -190,7 +196,6 @@ export interface DerivedVars {
   areaRevestimentoCeramico: number;
   fatorFaceReboco: number;
   fatorFacePintura: number;
-  // Pavimentos
   areaTerreo_m2: number;
   areaSubsolo_m2_eff: number;
   areaPavSuperior_m2_eff: number;
@@ -200,17 +205,22 @@ export interface DerivedVars {
   temPavSuperior: number;
   subsoloAcabado: number;
   alturaSubsolo_m: number;
-  // Escadas
   qtdEscadasEfetiva: number;
-  // Instalações por pontos
   pontosEletricos: number;
   pontosHidraulicos: number;
-  // Soma cômodos
   somaAreasComodos: number;
   pdDuploAviso: string;
   pdDuploDeltaH: number;
   pdDuploPerimetroAprox: number;
   sugestaoAlturaPD: number;
+  // New vars
+  fatorTerreno: number;
+  isEmbutido: number;
+  areaExternaGrama: number;
+  areaExternaPiso: number;
+  areaGaragemExtra: number;
+  areaGessoSancas: number;
+  areaSauna: number;
   [key: string]: number | string;
 }
 
@@ -459,6 +469,21 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const numBanheiros = comodos.banheiros.qtd > 0 ? comodos.banheiros.qtd + comodos.lavabos.qtd : inputs.numBanheiros;
   const numQuartos = comodos.quartos.qtd > 0 ? comodos.quartos.qtd : inputs.numQuartos;
 
+  // === Terreno ===
+  const terrenoTipo = inputs.terrenoTipo || 'PLANO';
+  const fatorTerreno = terrenoTipo === 'ACLIVE' ? 1.15 : terrenoTipo === 'DECLIVE' ? 1.20 : 1.00;
+
+  // === Telhado estilo ===
+  const telhadoEstilo = inputs.telhadoEstilo || 'APARENTE';
+  const isEmbutido = telhadoEstilo === 'EMBUTIDO' ? 1 : 0;
+
+  // === Pass-through areas ===
+  const areaExternaGrama = inputs.areaExternaGrama_m2 || 0;
+  const areaExternaPiso = inputs.areaExternaPiso_m2 || 0;
+  const areaGaragemExtra = inputs.areaGaragemExtra_m2 || 0;
+  const areaGessoSancas = inputs.areaGessoSancas_m2 || 0;
+  const areaSauna = inputs.areaSauna_m2 || 0;
+
   return {
     comprimento, largura,
     perimetroExterno, perimetroInterno, perimetroTotal,
@@ -486,7 +511,6 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     areaParede: areaParedeExternaLiquida,
     areaParedeInterna: areaParedeInterna2Faces,
     areaRevestimentoCeramico: areaRevestimentoCeramicoParede,
-    // Pavimentos
     areaTerreo_m2,
     areaSubsolo_m2_eff,
     areaPavSuperior_m2_eff,
@@ -499,5 +523,13 @@ export function derive(inputs: ProjectInputs): DerivedVars {
     qtdEscadasEfetiva,
     pontosEletricos, pontosHidraulicos,
     somaAreasComodos,
+    // New
+    fatorTerreno,
+    isEmbutido,
+    areaExternaGrama,
+    areaExternaPiso,
+    areaGaragemExtra,
+    areaGessoSancas,
+    areaSauna,
   };
 }

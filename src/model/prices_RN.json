@@ -64,5 +64,9 @@
   "gesso_forro": { "material_unit": 35.00, "mo_unit": 35.00 },
   "sauna_pacote": { "material_unit": 1200.00, "mo_unit": 450.00 },
   "inst_eletrica_ponto": { "material_unit": 45.00, "mo_unit": 55.00 },
-  "inst_hidraulica_ponto": { "material_unit": 55.00, "mo_unit": 65.00 }
+  "inst_hidraulica_ponto": { "material_unit": 55.00, "mo_unit": 65.00 },
+  "terrap_terraplenagem": { "material_unit": 0, "mo_unit": 35.00 },
+  "ext_piso_externo": { "material_unit": 110.00, "mo_unit": 45.00 },
+  "ext_garagem_extra_piso": { "material_unit": 110.00, "mo_unit": 45.00 },
+  "gesso_sancas": { "material_unit": 25.00, "mo_unit": 25.00 }
 }
