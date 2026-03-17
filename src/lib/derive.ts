@@ -129,6 +129,13 @@ export interface ProjectInputs {
   tipoPinturaExterna: 'ACRILICA' | 'TEXTURA';
   forroTipo: 'PVC' | 'GESSO' | 'DRYWALL' | 'SEM_FORRO';
   revestAltura: RevestAlturaInputs;
+  terrenoTipo: 'PLANO' | 'ACLIVE' | 'DECLIVE';
+  telhadoEstilo: 'APARENTE' | 'EMBUTIDO' | 'LAJE';
+  areaExternaGrama_m2: number;
+  areaExternaPiso_m2: number;
+  areaGaragemExtra_m2: number;
+  areaGessoSancas_m2: number;
+  areaSauna_m2: number;
   precos: PrecosInputs;
 }
 
