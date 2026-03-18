@@ -447,6 +447,33 @@ export default function ParamsForm({ inputs, onChange }: Props) {
         <InputField label="Lado Esq." value={inputs.muro.ladoEsq} onChange={(v) => setMuro('ladoEsq', v)} suffix="m" />
         <InputField label="Altura" value={inputs.muro.altura} onChange={(v) => setMuro('altura', v)} suffix="m" step={0.1}
           help="Altura do muro (m). Afeta área de alvenaria e acabamentos." />
+        {(() => {
+          const temDimensoes = (inputs.muro.frente + inputs.muro.fundos + inputs.muro.ladoDir + inputs.muro.ladoEsq) > 0 && inputs.muro.altura > 0;
+          const temAcabamento = (() => {
+            const a = acabamentos;
+            for (const tipo of ['chapisco', 'reboco', 'pintura'] as const) {
+              for (const tr of ['frente', 'laterais', 'fundo'] as const) {
+                if (a[tipo][tr].interna || a[tipo][tr].externa) return true;
+              }
+            }
+            return false;
+          })();
+          if (temAcabamento && !temDimensoes) {
+            return (
+              <div className="col-span-2 text-[10px] text-destructive bg-destructive/10 px-2 py-1 rounded">
+                ⚠ Para calcular acabamentos do muro, preencha frente/fundos/laterais e altura.
+              </div>
+            );
+          }
+          if (temDimensoes) {
+            return (
+              <div className="col-span-2 text-[10px] text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                Área alvenaria: <strong>{derived.areaMuro.toFixed(1)} m²</strong> · Chapisco: <strong>{derived.areaMuroChapisco_m2.toFixed(1)} m²</strong> · Reboco: <strong>{derived.areaMuroReboco_m2.toFixed(1)} m²</strong> · Pintura: <strong>{derived.areaMuroPintura_m2.toFixed(1)} m²</strong>
+              </div>
+            );
+          }
+          return null;
+        })()}
         <MuroAcabamentoGrid acabamentos={acabamentos} onChange={(a) => setMuro('acabamentos', a)} />
         <CheckboxField label="Portão garagem" checked={inputs.muro.portaoGaragem} onChange={(v) => setMuro('portaoGaragem', v)} />
         <CheckboxField label="Portão pedestre" checked={inputs.muro.portaoPedestre} onChange={(v) => setMuro('portaoPedestre', v)} />
