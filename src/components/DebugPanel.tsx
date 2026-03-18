@@ -52,6 +52,14 @@ export default function DebugPanel({ inputs, derived, result }: Props) {
             <p>areaVaranda: <strong>{derived.areaVaranda.toFixed(2)}</strong> m²</p>
             <p>areaInterna: <strong>{derived.areaInterna.toFixed(2)}</strong> m²</p>
           </div>
+          <div>
+            <h4 className="font-semibold text-foreground mb-1">Muro</h4>
+            <p>areaMuro (alvenaria): <strong>{(derived.areaMuro as number).toFixed(2)}</strong> m²</p>
+            <p>areaMuroChapisco: <strong>{(derived.areaMuroChapisco_m2 as number).toFixed(2)}</strong> m²</p>
+            <p>areaMuroReboco: <strong>{(derived.areaMuroReboco_m2 as number).toFixed(2)}</strong> m²</p>
+            <p>areaMuroPintura: <strong>{(derived.areaMuroPintura_m2 as number).toFixed(2)}</strong> m²</p>
+            <p>perimetroMuro: <strong>{(derived.perimetroMuro as number).toFixed(2)}</strong> m</p>
+          </div>
           {result.errors.length > 0 && (
             <div>
               <h4 className="font-semibold text-destructive mb-1">⚠ Erros de Fórmula</h4>
