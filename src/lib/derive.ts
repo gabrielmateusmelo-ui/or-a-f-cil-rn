@@ -330,14 +330,14 @@ export function derive(inputs: ProjectInputs): DerivedVars {
   const comodos = safeComodos(inputs.comodos);
   const somaAreasComodos = Object.values(comodos).reduce((s, c) => s + (c.areaTotal_m2 || 0), 0);
 
-  // Áreas derivadas de cômodos
-  const areaVaranda = comodos.varanda.areaTotal_m2 > 0 ? comodos.varanda.areaTotal_m2 : (inputs.areaVaranda_m2 || 0);
-  const areaMolhadas = comodos.banheiros.areaTotal_m2 + comodos.lavabos.areaTotal_m2
-    + comodos.cozinha.areaTotal_m2 + comodos.servico.areaTotal_m2
-    + (comodos.gourmet.areaTotal_m2 * 0.3);
-
-  const areaMolhadasEff = areaMolhadas > 0 ? areaMolhadas : (inputs.areaMolhadas_m2 || 0);
-  const areaVarandaEff = areaVaranda;
+  // === Áreas derivadas de cômodos (fonte de verdade) ===
+  const areaVarandaEff = comodos.varanda.areaTotal_m2;
+  const areaMolhadasEff =
+    comodos.banheiros.areaTotal_m2 +
+    comodos.lavabos.areaTotal_m2 +
+    comodos.cozinha.areaTotal_m2 +
+    comodos.servico.areaTotal_m2 +
+    (comodos.gourmet.areaTotal_m2 * 0.3);
 
   const perimetroExterno = 2 * (largura + comprimento);
   const perimetroInterno = perimetroExterno * inputs.fatorParedesInternas;

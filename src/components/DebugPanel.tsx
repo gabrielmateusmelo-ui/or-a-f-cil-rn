@@ -44,6 +44,14 @@ export default function DebugPanel({ inputs, derived, result }: Props) {
             <p>Total de itens: {result.items.length}</p>
             <p>Itens zerados: {zeroCount}</p>
           </div>
+          <div>
+            <h4 className="font-semibold text-foreground mb-1">Áreas derivadas (cômodos)</h4>
+            <p>areaMolhadas: <strong>{derived.areaMolhadas.toFixed(2)}</strong> m²</p>
+            <p>areaSeca: <strong>{derived.areaSeca.toFixed(2)}</strong> m²</p>
+            <p>areaRevestParedeMolhada: <strong>{(derived.areaRevestParedeMolhada_m2 as number).toFixed(2)}</strong> m²</p>
+            <p>areaVaranda: <strong>{derived.areaVaranda.toFixed(2)}</strong> m²</p>
+            <p>areaInterna: <strong>{derived.areaInterna.toFixed(2)}</strong> m²</p>
+          </div>
           {result.errors.length > 0 && (
             <div>
               <h4 className="font-semibold text-destructive mb-1">⚠ Erros de Fórmula</h4>
